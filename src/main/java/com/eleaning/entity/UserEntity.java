@@ -1,0 +1,258 @@
+package com.eleaning.entity;
+
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@Entity
+@Table(name="user")
+public class UserEntity {
+	@Id
+	private Long id;
+	
+	@NotBlank
+	@Size(min=3, max = 50)
+	private String username;
+	
+	@NotBlank
+	@Size(min=3, max = 50)
+	private String password;
+	
+	@NotBlank
+	@Size(min=3, max = 50)
+	private String email;
+	
+	private String image;
+	
+	@Size(min=3, max = 50)
+	private String fullname;
+	
+	private String token;
+	
+	private Timestamp createddate;
+	
+	private Timestamp modifieddate;
+	
+	private String createdby;
+	
+	private String modifiedby;
+	
+
+	@ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_role", 
+    	joinColumns = @JoinColumn(name = "userid"), 
+    	inverseJoinColumns = @JoinColumn(name = "roleid"))
+	@JsonIgnore
+    private Set<RoleEntity> role = new HashSet<>();
+
+	public UserEntity() {
+	}
+
+	public UserEntity(Long id, @NotBlank @Size(min = 3, max = 50) String username,
+			@NotBlank @Size(min = 3, max = 50) String password, @NotBlank @Size(min = 3, max = 50) String email,
+			String image, @Size(min = 3, max = 50) String fullname, String token, Timestamp createddate,
+			Timestamp modifieddate, String createdby, String modifiedby) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.image = image;
+		this.fullname = fullname;
+		this.token = token;
+		this.createddate = createddate;
+		this.modifieddate = modifieddate;
+		this.createdby = createdby;
+		this.modifiedby = modifiedby;
+	}
+
+
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * @return the image
+	 */
+	public String getImage() {
+		return image;
+	}
+
+	/**
+	 * @param image the image to set
+	 */
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	/**
+	 * @return the token
+	 */
+	public String getToken() {
+		return token;
+	}
+
+	/**
+	 * @param token the token to set
+	 */
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
+	/**
+	 * @return the fullname
+	 */
+	public String getFullname() {
+		return fullname;
+	}
+
+	/**
+	 * @param fullname the fullname to set
+	 */
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
+
+	/**
+	 * @param role the role to set
+	 */
+	public void setRole(Set<RoleEntity> role) {
+		this.role = role;
+	}
+
+	/**
+	 * @return the createddate
+	 */
+	public Timestamp getCreateddate() {
+		return createddate;
+	}
+
+	/**
+	 * @param createddate the createddate to set
+	 */
+	public void setCreateddate(Timestamp createddate) {
+		this.createddate = createddate;
+	}
+
+	/**
+	 * @return the modifieddate
+	 */
+	public Timestamp getModifieddate() {
+		return modifieddate;
+	}
+
+	/**
+	 * @param modifieddate the modifieddate to set
+	 */
+	public void setModifieddate(Timestamp modifieddate) {
+		this.modifieddate = modifieddate;
+	}
+
+	/**
+	 * @return the createdby
+	 */
+	public String getCreatedby() {
+		return createdby;
+	}
+
+	/**
+	 * @param createdby the createdby to set
+	 */
+	public void setCreatedby(String createdby) {
+		this.createdby = createdby;
+	}
+
+	/**
+	 * @return the modifiedby
+	 */
+	public String getModifiedby() {
+		return modifiedby;
+	}
+
+	/**
+	 * @param modifiedby the modifiedby to set
+	 */
+	public void setModifiedby(String modifiedby) {
+		this.modifiedby = modifiedby;
+	}
+
+	/**
+	 * @return the roles
+	 */
+	public Set<RoleEntity> getRole() {
+		return role;
+	}
+
+	/**
+	 * @param roles the roles to set
+	 */
+	public void setRoles(Set<RoleEntity> role) {
+		this.role = role;
+	}
+	
+}
