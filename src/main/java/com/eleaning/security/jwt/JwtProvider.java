@@ -37,9 +37,8 @@ public class JwtProvider {
 	                .compact();
 	}
 	
-	public boolean validateJwtToken(String authToken) {
+	public boolean validateJwtToken(final String authToken) {
 		try {
-//			Jwts.parser().setSigningKey(jwtSecret).parse(authToken);
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
 		} catch (SignatureException e) {

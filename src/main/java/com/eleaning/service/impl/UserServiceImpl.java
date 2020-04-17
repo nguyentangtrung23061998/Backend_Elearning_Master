@@ -1,6 +1,7 @@
 package com.eleaning.service.impl;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,29 @@ public class UserServiceImpl implements IUserService{
 		}
 		userRepository.save(entity);
 		return entity;
+	}
+
+	@Override
+	public UserEntity findUser(String username) {
+		try {
+			Optional<UserEntity> data = userRepository.findByUsername(username);
+			if (data.isPresent()) {
+				return data.get();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Boolean existsByUsername(String username) {
+		return userRepository.existsByUsername(username);
+	}
+
+	@Override
+	public Boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
 	}
 	
 	

@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,6 @@ import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.SignUpBean;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
-import com.eleaning.repository.IUserRepository;
 import com.eleaning.security.jwt.JwtProvider;
 import com.eleaning.service.IRoleService;
 import com.eleaning.service.IUserService;
@@ -45,9 +45,6 @@ public class AuthRestAPI {
 	private JwtProvider jwtProvider;
 	
 	@Autowired
-	private IUserRepository userRepository;
-	
-	@Autowired
 	private IUserService userService;
 	
 	@Autowired
@@ -57,6 +54,11 @@ public class AuthRestAPI {
 	private PasswordEncoder encode;
 	
 	private static String jwtType= "Bearer ";
+	
+	@GetMapping("/test")
+	public String demo() {
+		return "asdasdas";
+	}
 	
 	@PostMapping("/signin")
 	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean){
@@ -74,9 +76,8 @@ public class AuthRestAPI {
 			new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword())
 		);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		UserEntity user = userRepository.findByUsername(loginBean.getUsername())
-			.orElseThrow(()->new RuntimeException("Fail! -> Cause: User Role not find."));
+
+		UserEntity user = userService.findUser(loginBean.getUsername());
 		String jwt = jwtProvider.generateJwtToken(authentication);
 		
 		user.setToken(jwtType+jwt);
@@ -97,12 +98,12 @@ public class AuthRestAPI {
 	@PostMapping("/signup")
 	public ResponseEntity<ResponseBean> registerUser(@Valid @RequestBody SignUpBean signupBean) {
 		ResponseBean responseBean = new ResponseBean();
-		if (userRepository.existsByUsername(signupBean.getUsername())) {
+		if (userService.existsByUsername(signupBean.getUsername())) {
 			responseBean.setIsExisting();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 
-		if (userRepository.existsByEmail(signupBean.getEmail())) {
+		if (userService.existsByEmail(signupBean.getEmail())) {
 			responseBean.setEmailIsExisting();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
@@ -154,7 +155,7 @@ public class AuthRestAPI {
 		});
 		
 		user.setRoles(roles);
-		userRepository.save(user);
+		userService.save(user);
 		
 		MapBean map = new MapBean();
 		map.put("username", user.getUsername());

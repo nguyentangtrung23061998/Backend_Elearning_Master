@@ -10,7 +10,6 @@ import com.eleaning.entity.RoleEntity;
 
 
 public interface IRoleRepository extends CrudRepository<RoleEntity, Long>{
-	
-	 @Query("SELECT m FROM RoleEntity m WHERE rolename = :rolename ")
+	@Query("SELECT m FROM RoleEntity m WHERE rolename = :rolename ")
 	Optional<RoleEntity> findByUsername(@Param("rolename") String rolename);
 }
