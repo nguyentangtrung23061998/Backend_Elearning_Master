@@ -1,6 +1,7 @@
 package com.eleaning.service.impl;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class UserServiceImpl implements IUserService{
 		if(entity.getId() == 0) {
 			entity.setCreateddate(new Timestamp(System.currentTimeMillis()));
 			
+		}else {
+			entity.setModifieddate(new Timestamp(System.currentTimeMillis()));
 		}
 		userRepository.save(entity);
 		return entity;
@@ -46,6 +49,29 @@ public class UserServiceImpl implements IUserService{
 	@Override
 	public Boolean existsByEmail(String email) {
 		return userRepository.existsByEmail(email);
+	}
+
+	@Override
+	public UserEntity findUserByid(long id) {
+		try {
+			Optional<UserEntity> data = userRepository.findById(id);
+			if (data.isPresent()) {
+				return data.get();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<UserEntity> getUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+	public void delete(Long id) {
+		userRepository.deleteById(id);
 	}
 	
 	

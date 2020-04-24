@@ -29,4 +29,5 @@ public class Constant {
 	public static final String TIME_SLOT_TYPE_CLOSEDTIME 	= "CLOSEDTIME";
 	public static final String TIME_SLOT_TYPE_UNBOOKABLE 	= "UNBOOKABLE";
 	
+	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\upload";
 }

@@ -1,5 +1,8 @@
 package com.eleaning.util;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.eleaning.bean.ResponseBean;
 
@@ -312,5 +316,28 @@ public class Util {
 			return minutesToString(minutes);
 		}
 		return "";
+	}
+	
+	public static boolean upload(MultipartFile file) {
+		String uploadRootPath = Constant.UPLOAD_IMG;
+		File f = new File(uploadRootPath);
+		if(!f.exists()) {
+			f.mkdirs();
+		}
+		String name = file.getOriginalFilename();
+		if(name != null && name.length() >0) {
+			try {
+				File serverFile = new File(uploadRootPath + "\\" + name);
+				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
+				stream.write(file.getBytes());
+				System.out.println("áaaa");
+				stream.close();
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
 	}
 }

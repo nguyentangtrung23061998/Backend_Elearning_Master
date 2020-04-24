@@ -116,6 +116,11 @@ public class ResponseBean {
 		this.setMessages(messageKey, message);
 		this.setStatus(HttpStatus.FAILED_DEPENDENCY.value());
 	}
+	
+	public void setFailUpload() {
+		this.setMessages("msg.failupload", "Fail upload");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+	}
 
 	public void setNotAllowed() {
 		this.setMessages("msg.youAreNotAllowed", "You are not allowed");

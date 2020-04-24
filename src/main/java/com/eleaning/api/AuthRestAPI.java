@@ -40,63 +40,57 @@ public class AuthRestAPI {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private JwtProvider jwtProvider;
-	
+
 	@Autowired
 	private IUserService userService;
-	
+
 	@Autowired
 	private IRoleService roleService;
 
 	@Autowired
 	private PasswordEncoder encode;
-	
-	private static String jwtType= "Bearer ";
-	
-	@GetMapping("/test")
-	public String demo() {
-		return "asdasdas";
-	}
-	
+
+	private static String jwtType = "Bearer ";
+
 	@PostMapping("/signin")
-	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean){
+	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean) {
 		ResponseBean responseBean = new ResponseBean();
-		
+
 		loginBean.setUsername(Util.trim(loginBean.getUsername()));
 		loginBean.setPassword(Util.trim(loginBean.getPassword()));
-		
-		if(loginBean.getUsername() == null || loginBean.getPassword() == null) {
+
+		if (loginBean.getUsername() == null || loginBean.getPassword() == null) {
 			responseBean.setEnterAllRequiredFields();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		Authentication authentication = authenticationManager.authenticate(
-			new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword())
-		);
+				new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		UserEntity user = userService.findUser(loginBean.getUsername());
 		String jwt = jwtProvider.generateJwtToken(authentication);
-		
-		user.setToken(jwtType+jwt);
+
+		user.setToken(jwtType + jwt);
 		userService.save(user);
-		
+
 		MapBean map = new MapBean();
 		map.put("username", user.getUsername());
 		map.put("email", user.getEmail());
-		map.put("fullname",user.getFullname());
+		map.put("fullname", user.getFullname());
 		map.put("token", user.getToken());
-		
+
 		responseBean.setData(map.getAll());
 		responseBean.setSuccess();
-		
-		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<ResponseBean> registerUser(@Valid @RequestBody SignUpBean signupBean) {
+	public ResponseEntity<ResponseBean> registerUser(@RequestBody SignUpBean signupBean) {
 		ResponseBean responseBean = new ResponseBean();
 		if (userService.existsByUsername(signupBean.getUsername())) {
 			responseBean.setIsExisting();
@@ -107,21 +101,27 @@ public class AuthRestAPI {
 			responseBean.setEmailIsExisting();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
+		if (signupBean.getUsername() == null || signupBean.getPassword() == null || signupBean.getRole().size() < 0
+				|| signupBean.getFullname() == null || signupBean.getEmail() == null) {
+			responseBean.setEnterAllRequiredFields();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+		}
 
 		// create user's account
 		Long id = Calendar.getInstance().getTimeInMillis();
 		String encodePasswod = encode.encode(signupBean.getPassword());
-		UserEntity user = new UserEntity(id, signupBean.getUsername(), encodePasswod, signupBean.getEmail(), "", signupBean.getFullname(),"",
-				new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), "", "");
-		
+		UserEntity user = new UserEntity(id, signupBean.getUsername(), encodePasswod, signupBean.getEmail(), "",
+				signupBean.getFullname(), "", new Timestamp(System.currentTimeMillis()),
+				new Timestamp(System.currentTimeMillis()), "", "");
+
 		System.out.println("user: " + user.getUsername());
 		Set<String> strRoles = signupBean.getRole();
 		Set<RoleEntity> roles = new HashSet<RoleEntity>();
-		strRoles.forEach(role->{
+		strRoles.forEach(role -> {
 			switch (role) {
 			case "ADMIN":
 				RoleEntity roleAdmin = roleService.findByUsername("ROLE_ADMIN");
-				if(roleAdmin == null) {
+				if (roleAdmin == null) {
 					responseBean.setRoleUserNotFound();
 				}
 				roles.add(roleAdmin);
@@ -129,42 +129,42 @@ public class AuthRestAPI {
 
 			case "STUDENT":
 				RoleEntity roleStudent = roleService.findByUsername("ROLE_STUDENT");
-				if(roleStudent ==null) {
+				if (roleStudent == null) {
 					responseBean.setRoleUserNotFound();
-				}else {
+				} else {
 					roles.add(roleStudent);
 				}
 				break;
 			case "TEACHER":
 				RoleEntity roleTeacher = roleService.findByUsername("ROLE_TEACHER");
-				if(roleTeacher ==null) {
+				if (roleTeacher == null) {
 					responseBean.setRoleUserNotFound();
-				}else {
+				} else {
 					roles.add(roleTeacher);
 				}
 				break;
 			default:
 				RoleEntity roleUser = roleService.findByUsername("ROLE_USER");
-				if(roleUser ==null) {
+				if (roleUser == null) {
 					responseBean.setRoleUserNotFound();
-				}else {
+				} else {
 					roles.add(roleUser);
 				}
 				break;
 			}
 		});
-		
+
 		user.setRoles(roles);
 		userService.save(user);
-		
+
 		MapBean map = new MapBean();
 		map.put("username", user.getUsername());
 		map.put("email", user.getEmail());
-		map.put("fullname",user.getFullname());
-		
+		map.put("fullname", user.getFullname());
+
 		responseBean.setData(map);
-		responseBean.setSuccess();
-		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+		responseBean.setInsertSuccess();
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
 }

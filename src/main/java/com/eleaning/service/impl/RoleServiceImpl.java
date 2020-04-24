@@ -1,6 +1,9 @@
 package com.eleaning.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -23,7 +26,6 @@ public class RoleServiceImpl implements IRoleService{
 		
 		try {
 			Optional<RoleEntity> data = roleRepository.findByUsername(username);
-//			Optional<RoleEntity> data = roleRepository.findById((long) 1);
 			if (data.isPresent()) {
 				return data.get();
 			}
@@ -33,4 +35,11 @@ public class RoleServiceImpl implements IRoleService{
 		return null;
 	}
 
+	@Override
+	public List<RoleEntity> getRoles() {
+		List<RoleEntity> roleEntity = new ArrayList<RoleEntity>();
+		roleRepository.findAll().forEach(roleEntity::add);
+		return roleEntity.stream().collect(Collectors.toList());
+	}
+	
 }

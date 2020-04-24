@@ -10,9 +10,11 @@ import org.springframework.stereotype.Repository;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
 
+@Repository
 public interface IUserRepository extends JpaRepository<UserEntity, Long> {
 	Boolean existsByUsername(String username);
 	Boolean existsByEmail(String email);
 	@Query("SELECT m FROM UserEntity m WHERE username = :username ")
 	Optional<UserEntity> findByUsername(@Param("username") String username);
+	
 }
