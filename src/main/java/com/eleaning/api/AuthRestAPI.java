@@ -120,7 +120,7 @@ public class AuthRestAPI {
 		strRoles.forEach(role -> {
 			switch (role) {
 			case "ADMIN":
-				RoleEntity roleAdmin = roleService.findByUsername("ROLE_ADMIN");
+				RoleEntity roleAdmin = roleService.findByRolename("ROLE_ADMIN");
 				if (roleAdmin == null) {
 					responseBean.setRoleUserNotFound();
 				}
@@ -128,7 +128,7 @@ public class AuthRestAPI {
 				break;
 
 			case "STUDENT":
-				RoleEntity roleStudent = roleService.findByUsername("ROLE_STUDENT");
+				RoleEntity roleStudent = roleService.findByRolename("ROLE_STUDENT");
 				if (roleStudent == null) {
 					responseBean.setRoleUserNotFound();
 				} else {
@@ -136,7 +136,7 @@ public class AuthRestAPI {
 				}
 				break;
 			case "TEACHER":
-				RoleEntity roleTeacher = roleService.findByUsername("ROLE_TEACHER");
+				RoleEntity roleTeacher = roleService.findByRolename("ROLE_TEACHER");
 				if (roleTeacher == null) {
 					responseBean.setRoleUserNotFound();
 				} else {
@@ -144,7 +144,7 @@ public class AuthRestAPI {
 				}
 				break;
 			default:
-				RoleEntity roleUser = roleService.findByUsername("ROLE_USER");
+				RoleEntity roleUser = roleService.findByRolename("ROLE_USER");
 				if (roleUser == null) {
 					responseBean.setRoleUserNotFound();
 				} else {

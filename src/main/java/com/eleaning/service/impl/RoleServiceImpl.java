@@ -5,13 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.eleaning.entity.RoleEntity;
-import com.eleaning.entity.UserEntity;
 import com.eleaning.repository.IRoleRepository;
 import com.eleaning.service.IRoleService;
 
@@ -22,7 +19,7 @@ public class RoleServiceImpl implements IRoleService{
 	private IRoleRepository roleRepository;
 	
 	@Override
-	public RoleEntity findByUsername(String username) {
+	public RoleEntity findByRolename(String username) {
 		
 		try {
 			Optional<RoleEntity> data = roleRepository.findByUsername(username);

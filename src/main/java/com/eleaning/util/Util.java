@@ -12,8 +12,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.eleaning.bean.ResponseBean;
-
 public class Util {
 	public static String getRealIpAddr() {
 
@@ -319,7 +317,31 @@ public class Util {
 	}
 	
 	public static boolean upload(MultipartFile file) {
-		String uploadRootPath = Constant.UPLOAD_IMG;
+		String uploadRootPath = "";
+		String orginalFile = file.getOriginalFilename();
+		
+		String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);
+		for (String extensionVideo : Constant.extensionVideo) {
+			if(extension == extensionVideo) {
+				uploadRootPath = Constant.UPLOAD_VIDEO;
+			}
+		}
+		System.out.println("asdak;sdkalsdjakldj");
+		for (String extensionImg : Constant.extensionImg) {
+			if(extension.equals(extensionImg)) {
+				uploadRootPath = Constant.UPLOAD_IMG;
+			}
+		}
+		for (String extensionAudio : Constant.extensionAudio) {
+			if(extension.equals(extensionAudio)) {
+				uploadRootPath = Constant.UPLOAD_AUDIO;
+			}
+		}
+		for (String extensionDocument : Constant.extensionDocument) {
+			if(extension.equals(extensionDocument)) {
+				uploadRootPath = Constant.UPLOAD_DOCUMENT;
+			}
+		}
 		File f = new File(uploadRootPath);
 		if(!f.exists()) {
 			f.mkdirs();
@@ -330,7 +352,6 @@ public class Util {
 				File serverFile = new File(uploadRootPath + "\\" + name);
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				stream.write(file.getBytes());
-				System.out.println("áaaa");
 				stream.close();
 				return true;
 			} catch (Exception e) {

@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
 
 @Repository
@@ -17,4 +16,6 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long> {
 	@Query("SELECT m FROM UserEntity m WHERE username = :username ")
 	Optional<UserEntity> findByUsername(@Param("username") String username);
 	
+	@Query("SELECT m FROM UserEntity m WHERE token = :token ")
+	Optional<UserEntity> findByToken(@Param("token") String token);
 }

@@ -2,61 +2,63 @@ package com.eleaning.entity;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class UserEntity {
 	@Id
 	private Long id;
-	
+
 	@NotBlank
-	@Size(min=3, max = 50)
+	@Size(min = 3, max = 50)
 	private String username;
-	
+
 	@NotBlank
-	@Size(min=3, max = 50)
+	@Size(min = 3, max = 50)
 	private String password;
-	
+
 	@NotBlank
-	@Size(min=3, max = 50)
+	@Size(min = 3, max = 50)
 	private String email;
-	
+
 	private String image;
-	
-	@Size(min=3, max = 50)
+
+	@Size(min = 3, max = 50)
 	private String fullname;
-	
+
 	private String token;
-	
+
 	private Timestamp createddate;
-	
+
 	private Timestamp modifieddate;
-	
+
 	private String createdby;
-	
+
 	private String modifiedby;
-	
 
 	@ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_role", 
-    	joinColumns = @JoinColumn(name = "userid"), 
-    	inverseJoinColumns = @JoinColumn(name = "roleid"))
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "roleid"))
 	@JsonIgnore
-    private Set<RoleEntity> role = new HashSet<>();
+	private Set<RoleEntity> role = new HashSet<>();
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	private List<CourseEntity> course;
 
 	public UserEntity() {
 	}
@@ -77,8 +79,6 @@ public class UserEntity {
 		this.createdby = createdby;
 		this.modifiedby = modifiedby;
 	}
-
-
 
 	/**
 	 * @return the id
@@ -163,7 +163,7 @@ public class UserEntity {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
+
 	/**
 	 * @return the fullname
 	 */
@@ -254,5 +254,18 @@ public class UserEntity {
 	public void setRoles(Set<RoleEntity> role) {
 		this.role = role;
 	}
-	
+
+	/**
+	 * @return the course
+	 */
+	public List<CourseEntity> getCourse() {
+		return course;
+	}
+
+	/**
+	 * @param course the course to set
+	 */
+	public void setCourse(List<CourseEntity> course) {
+		this.course = course;
+	}
 }

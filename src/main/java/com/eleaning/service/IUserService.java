@@ -12,4 +12,5 @@ public interface IUserService {
 	public UserEntity findUserByid(long id);
 	public List<UserEntity> getUsers();
 	public void delete(Long id);
+	public UserEntity findByToken(String token);
 }

@@ -167,6 +167,17 @@ public class ResponseBean {
 		this.setStatus(HttpStatus.FOUND.value());
 	}
 
+	public void setRoleFail() {
+		this.setMessages("msg.roleFail", "Role is not suitable");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+		
+	}
+	public void setDeleteFail() {
+		this.setMessages("msg.deleteFail", "Delete fail");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+		
+	}
+
 //	public void setTokenTimeout() {
 //		this.setMessages("msg.timeOut", "Time out");
 //		this.setStatus(Constant.TIME_OUT_CODE);

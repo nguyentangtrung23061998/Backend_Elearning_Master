@@ -10,6 +10,11 @@ public class Constant {
 	public static final int TIME_OUT_CODE 					= 600;
 	public static final int LENGHT_OF_TOKEN 			= 128;
 	public static final int LENGHT_OF_PASSWORD 		= 5;
+	
+	public static String[] extensionImg = {"jpg","png","jpeg","gif","bmp"};
+	public static String[] extensionVideo  = {"mp4","mwv","avi","mov","ts"};
+	public static String[] extensionAudio = {"mp3" ,"mwa","wav","alac","aac"};
+	public static String[] extensionDocument = {"doc" ,"xlxs"};
 
 	public static final String SITE_URL_KEY 						= "cybinium.url";
 	public static final String EMAIL_SENDER_KEY 			= "spring.mail.sender";
@@ -29,5 +34,8 @@ public class Constant {
 	public static final String TIME_SLOT_TYPE_CLOSEDTIME 	= "CLOSEDTIME";
 	public static final String TIME_SLOT_TYPE_UNBOOKABLE 	= "UNBOOKABLE";
 	
-	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\upload";
+	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\upload\\image";
+	public static final String UPLOAD_VIDEO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\video";
+	public static final String UPLOAD_AUDIO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\audio";
+	public static final String UPLOAD_DOCUMENT = "G:\\HKII-Nam4\\PTPMHDV\\upload\\document";
 }

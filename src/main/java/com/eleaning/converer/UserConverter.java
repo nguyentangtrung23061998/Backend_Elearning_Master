@@ -1,0 +1,22 @@
+package com.eleaning.converer;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
+
+import com.eleaning.bean.UserBean;
+import com.eleaning.entity.UserEntity;
+
+@Component
+public class UserConverter {
+	public UserBean convertBean(UserEntity userEntity) {
+		ModelMapper modelMapper = new ModelMapper();
+		UserBean result =modelMapper.map(userEntity, UserBean.class);
+		return result;
+	}
+	
+	public UserEntity convertEntity(UserBean userBean) {
+		ModelMapper modelMapper = new ModelMapper();
+		UserEntity result = modelMapper.map(userBean, UserEntity.class);
+		return result;
+	}
+}

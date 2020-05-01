@@ -73,6 +73,19 @@ public class UserServiceImpl implements IUserService{
 	public void delete(Long id) {
 		userRepository.deleteById(id);
 	}
+
+	@Override
+	public UserEntity findByToken(String token) {
+		try {
+			Optional<UserEntity> data = userRepository.findByToken(token);
+			if (data.isPresent()) {
+				return data.get();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	
 }
