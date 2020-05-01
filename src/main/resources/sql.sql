@@ -24,19 +24,16 @@ DROP TABLE IF EXISTS `course`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `course` (
   `id` bigint(20) NOT NULL,
-  `coursename` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `coursedescription` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `userid` bigint(20) NOT NULL,
-  `subjectid` bigint(20) NOT NULL,
   `createddate` timestamp NULL DEFAULT NULL,
   `modifieddate` timestamp NULL DEFAULT NULL,
   `createdby` varchar(100) DEFAULT NULL,
   `modifiedby` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userid` (`userid`),
-  KEY `subjectid` (`subjectid`),
-  CONSTRAINT `course_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
-  CONSTRAINT `course_ibfk_2` FOREIGN KEY (`subjectid`) REFERENCES `subject` (`id`)
+  CONSTRAINT `course_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -203,6 +200,41 @@ LOCK TABLES `grammar_list_content` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `lecture`
+--
+
+DROP TABLE IF EXISTS `lecture`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `lecture` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `video` varchar(255) DEFAULT NULL,
+  `audio` varchar(255) DEFAULT NULL,
+  `document` varchar(255) DEFAULT NULL,
+  `courseid` bigint(20) DEFAULT NULL,
+  `createddate` timestamp NULL DEFAULT NULL,
+  `modifieddate` timestamp NULL DEFAULT NULL,
+  `createdby` varchar(100) DEFAULT NULL,
+  `modifiedby` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_LECTURE_COURSE` (`courseid`),
+  CONSTRAINT `FK_LECTURE_COURSE` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lecture`
+--
+
+LOCK TABLES `lecture` WRITE;
+/*!40000 ALTER TABLE `lecture` DISABLE KEYS */;
+INSERT INTO `lecture` VALUES (1588322749257,'tense advance','background2.jpg','Bai 1 - Introduction to Microservices, Spring Boot, and Spring Cloud.ts','Bai 1 - Introduction to Microservices, Spring Boot, and Spring Cloud.aac',NULL,NULL,'2020-05-01 08:45:49','2020-05-01 12:47:20',NULL,NULL);
+/*!40000 ALTER TABLE `lecture` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `role`
 --
 
@@ -264,36 +296,6 @@ LOCK TABLES `student_course_enrolement` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `subject`
---
-
-DROP TABLE IF EXISTS `subject`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `subject` (
-  `id` bigint(20) NOT NULL,
-  `subjectname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `video` varchar(255) DEFAULT NULL,
-  `audio` varchar(255) DEFAULT NULL,
-  `createddate` timestamp NULL DEFAULT NULL,
-  `modifieddate` timestamp NULL DEFAULT NULL,
-  `createdby` varchar(100) DEFAULT NULL,
-  `modifiedby` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `subject`
---
-
-LOCK TABLES `subject` WRITE;
-/*!40000 ALTER TABLE `subject` DISABLE KEYS */;
-/*!40000 ALTER TABLE `subject` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `user`
 --
 
@@ -324,7 +326,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1587018021964,'NguyenTangTrung','$2a$10$C7gY5EQCrfX5NCuECnXZtOtY8oNmqiP/4AQiYD/wJMAOJVmS7LviK','adam@gmail.com','','',NULL,'2020-04-16 06:20:22','2020-04-16 06:20:22','',''),(1587019347825,'dung','$2a$10$PDjBxrdMX9dEsW7ipOpjZewsfLBJey6TY5LkPOjLd1lS.Fuxaw2mO','phuongdung@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdW5nIiwiaWF0IjoxNTg3MDQyNTc1LCJleHAiOjE1ODcxMjg5NzV9.zJm-CFs0ln8B4RTTTjw63cFugG5ym1hET0kkpSH3wjRhTYrLBCcg7a9QoR6kBifhLV8I3hK2eTRAKlo-dSewBw',NULL,'2020-04-16 06:42:28','2020-04-16 06:42:28','',''),(1587019353282,'trung','$2a$10$D1iLtmrNqIgKDWx8nH3AteTtWtePGGp0I4Ficke4uPhxOtSmQppAO','trungnguyen@gmail.com','','',NULL,'2020-04-16 06:42:33','2020-04-16 06:42:33','',''),(1587043830726,'viet','$2a$10$tJ.wEFRLwmJOGOpIOK/vu.NYRgRlfjaqRGpQvepT4gUWzjRxD0xaG','trinhviet@gmail.com','','',NULL,'2020-04-16 13:30:31','2020-04-16 13:30:31','',''),(1587047018622,'kithu223','$2a$10$MJhltVEs7EItDfbPaulM5uYfcHMAReJtrAJ4kIIfsN6NKvWc3xhX6','kythu222@gmail.com','','','Kì Thư','2020-04-16 14:23:39','2020-04-16 14:23:39','','');
+INSERT INTO `user` VALUES (1587713344988,'thanh','$2a$10$xd2bzfddOEEdR2YmUtTI5uPMVC3HrRHd.O9gWeSIdNJ9fKdW/lXyG','trungab22c@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0aGFuaCIsImlhdCI6MTU4ODMzOTkwMSwiZXhwIjoxNTg4NDI2MzAxfQ.ztAZoxZccEGwiOkMNzG7RkzwgFuXh8EkuNI4h8sHOzXXrdW-CNHLGB-6dfhO7orQNvVXWkv00UnYaj-hPscH3A','Trung đẹp trai','2020-04-24 07:29:05','2020-05-01 13:31:43','',''),(1588172402901,'trungdeptrai','$2a$10$5SsyRVsjSWqZ8IOc1hBf9.xzvA2dq9OaytyRVMy125NjMIcxel5Si','trungnen@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0cnVuZ2RlcHRyYWkiLCJpYXQiOjE1ODgzMjE2MDcsImV4cCI6MTU4ODQwODAwN30.63NLU-BBAdP6MmKJjmETQ5WX8NS3YQMeBnqYHU1DRFyc2TR0sgbpN-ytqvPH4f8bfzTIE7FM_GQ7BK0XmHhwaA','Nguyen Trung','2020-04-29 15:00:03','2020-05-01 08:26:47','','');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,7 +353,7 @@ CREATE TABLE `user_role` (
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
-INSERT INTO `user_role` VALUES (1587047018622,3);
+INSERT INTO `user_role` VALUES (1588172402901,2),(1587713344988,3);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -368,4 +370,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-16 22:11:25
+-- Dump completed on 2020-05-01 21:46:38
