@@ -6,12 +6,15 @@ public class UserBean {
 	private String email;
 	private String image;
 	private String fullname;
-	public UserBean(String username, String password, String email, String image, String fullname) {
+	private String role;
+
+	public UserBean(String username, String password, String email, String image, String fullname, String role) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.image = image;
 		this.fullname = fullname;
+		this.role = role;
 	}
 	public UserBean() {
 	}
@@ -75,4 +78,18 @@ public class UserBean {
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
 	}
+	/**
+	 * @return the role
+	 */
+	public String getRole() {
+		return role;
+	}
+	/**
+	 * @param role the role to set
+	 */
+	public void setRole(String role) {
+		this.role = role;
+	}
+	
+	
 }

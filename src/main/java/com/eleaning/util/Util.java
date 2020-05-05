@@ -326,7 +326,6 @@ public class Util {
 				uploadRootPath = Constant.UPLOAD_VIDEO;
 			}
 		}
-		System.out.println("asdak;sdkalsdjakldj");
 		for (String extensionImg : Constant.extensionImg) {
 			if(extension.equals(extensionImg)) {
 				uploadRootPath = Constant.UPLOAD_IMG;

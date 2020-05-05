@@ -144,12 +144,13 @@ public class AuthRestAPI {
 				}
 				break;
 			default:
-				RoleEntity roleUser = roleService.findByRolename("ROLE_USER");
-				if (roleUser == null) {
-					responseBean.setRoleUserNotFound();
-				} else {
-					roles.add(roleUser);
-				}
+//				RoleEntity roleUser = roleService.findByRolename("ROLE_USER");
+//				if (roleUser == null) {
+//					responseBean.setRoleUserNotFound();
+//				} else {
+//					roles.add(roleUser);
+//				}
+				responseBean.setRoleUserNotFound();
 				break;
 			}
 		});

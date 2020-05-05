@@ -1,13 +1,19 @@
 package com.eleaning.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,89 +27,148 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
+import com.eleaning.bean.RoleNameBean;
 import com.eleaning.bean.UserBean;
+import com.eleaning.converer.UserConverter;
+import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
+import com.eleaning.service.IRoleService;
 import com.eleaning.service.IUserService;
 import com.eleaning.util.Util;
-
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/users")
 public class UserRestAPI {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(UserRestAPI.class);
-	
+
 	@Autowired
 	private IUserService userService;
-	
+
+	@Autowired
+	private IRoleService roleService;
+
+	@Autowired
+	private UserConverter userConverter;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	public boolean checkRole(List list) {
+		for (int i = 0; i < list.size(); i++) {
+			String role = String.valueOf(list.get(i));
+			RoleNameBean strRole = RoleNameBean.ROLE_STUDENT;
+			String roleStudent = strRole.getValue();
+			if(role.equals(roleStudent))
+				return false;
+		}
+		return true;
+	}
 	
 	@GetMapping("")
-	private ResponseEntity<ResponseBean> getUser(){
+	private ResponseEntity<ResponseBean> getUser() {
 		ResponseBean responseBean = new ResponseBean();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		try {
+			List list = (List) authentication.getAuthorities();
+			boolean check = checkRole(list);
+			if(!check) {
+				responseBean.setRoleFail();
+				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+			}
+			
 			List<UserEntity> users = userService.getUsers();
-			responseBean.setData(users);
+			MapBean map = new MapBean();
+			List listUsers = new ArrayList();
+			for (int i = 0; i < users.size(); i++) {
+				UserEntity user = new UserEntity();
+				map = new MapBean();
+				user = users.get(i);
+				map.put("data", user.getRole());
+				listUsers.add(map.getAll());
+			}
+			responseBean.setData(listUsers);
 			responseBean.setSuccess();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	@PostMapping("/upload/{id}")
-	private ResponseEntity<ResponseBean> uploadUser(@PathVariable long id, @RequestParam("file") MultipartFile file) throws IOException {
+	private ResponseEntity<ResponseBean> uploadUser(@PathVariable long id, @RequestParam("file") MultipartFile file)
+			throws IOException {
 		UserEntity user = userService.findUserByid(id);
 		ResponseBean responseBean = new ResponseBean();
-		if(user != null) {
+		if (user != null) {
 			boolean checkUpload = Util.upload(file);
-			if(checkUpload) {
+			if (checkUpload) {
 				user.setImage(file.getOriginalFilename());
+				userService.save(user);
 				responseBean.setData(user);
 				responseBean.setSuccess();
-				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
-			}else {
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			} else {
 				responseBean.setFailUpload();
-				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 			}
 		}
 		return null;
 	}
-	
+
 	@PutMapping("/{id}")
-	private ResponseEntity<ResponseBean> updateUser(@PathVariable long id, @RequestBody UserBean userBean){
+	private ResponseEntity<ResponseBean> updateUser(@PathVariable long id, @RequestBody UserBean userBean) {
 		ResponseBean responseBean = new ResponseBean();
 		try {
-			System.out.println("id: " + id);
-			UserEntity user = userService.findUserByid(id);	
-			System.out.println("user: " + user.getFullname());
+			Set<RoleEntity> roles = new HashSet<RoleEntity>();
+			UserEntity user = userService.findUserByid(id);
+			RoleEntity role = roleService.findByRolename(userBean.getRole());
+			if (role == null) {
+				responseBean.setRoleUserNotFound();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+
 			user.setUsername(userBean.getUsername());
-			user.setPassword(passwordEncoder.encode(userBean.getPassword()));;
+			user.setPassword(passwordEncoder.encode(userBean.getPassword()));
 			user.setEmail(userBean.getEmail());
 			user.setFullname(userBean.getFullname());
-			
-			userService.save(user);
-			responseBean.setData(user);
+
+			roles.add(role);
+			user.setRole(roles);
+			UserEntity userEntity = userService.save(user);
+			UserBean userOutput = userConverter.convertBean(userEntity);
+			userOutput.setImage(user.getImage());
+			userOutput.setRole(userBean.getRole());
+				
+			responseBean.setData(userOutput);
 			responseBean.setSuccess();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	@DeleteMapping("/{id}")
-	private ResponseEntity<ResponseBean> deleteUser(@PathVariable long id){
+	private ResponseEntity<ResponseBean> deleteUser(@PathVariable long id) {
 		ResponseBean responseBean = new ResponseBean();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		List list = (List) authentication.getAuthorities();
+		boolean check = checkRole(list);
+		if(!check) {
+			responseBean.setRoleFail();
+			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+		}
+		
 		userService.delete(id);
 		responseBean.setData("{}");
 		responseBean.setSuccess();
-		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 }
