@@ -3,6 +3,7 @@ package com.eleaning.api;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -58,7 +59,7 @@ public class AuthRestAPI {
 	@PostMapping("/signin")
 	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean) {
 		ResponseBean responseBean = new ResponseBean();
-
+		
 		loginBean.setUsername(Util.trim(loginBean.getUsername()));
 		loginBean.setPassword(Util.trim(loginBean.getPassword()));
 
@@ -73,6 +74,8 @@ public class AuthRestAPI {
 
 		UserEntity user = userService.findUser(loginBean.getUsername());
 		String jwt = jwtProvider.generateJwtToken(authentication);
+		Authentication roleAuthentication = SecurityContextHolder.getContext().getAuthentication();
+		List list = (List) roleAuthentication.getAuthorities();
 
 		user.setToken(jwtType + jwt);
 		userService.save(user);
@@ -82,6 +85,7 @@ public class AuthRestAPI {
 		map.put("email", user.getEmail());
 		map.put("fullname", user.getFullname());
 		map.put("token", user.getToken());
+		map.put("role",list.get(0));
 
 		responseBean.setData(map.getAll());
 		responseBean.setSuccess();

@@ -1,4 +1,4 @@
-package com.eleaning.converer;
+package com.eleaning.conveter;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

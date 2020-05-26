@@ -31,7 +31,7 @@ import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
 import com.eleaning.bean.UserBean;
-import com.eleaning.converer.UserConverter;
+import com.eleaning.conveter.UserConverter;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
 import com.eleaning.service.IRoleService;

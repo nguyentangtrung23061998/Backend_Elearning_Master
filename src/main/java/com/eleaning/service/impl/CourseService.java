@@ -6,12 +6,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import javax.tools.OptionChecker;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.eleaning.entity.CourseEntity;
+import com.eleaning.entity.ExamCourseEntity;
 import com.eleaning.entity.LectureEntity;
 import com.eleaning.repository.ICourseRepository;
+import com.eleaning.repository.IExamCourseRepository;
 import com.eleaning.repository.ILectureRepository;
 import com.eleaning.service.ICourseService;
 
@@ -23,6 +27,9 @@ public class CourseService implements ICourseService{
 	
 	@Autowired
 	private ILectureRepository lectureRepository;
+	
+	@Autowired
+	private IExamCourseRepository examCourseRepository;
 	
 	@Override
 	public CourseEntity save(CourseEntity course) {
@@ -58,11 +65,16 @@ public class CourseService implements ICourseService{
 	public boolean delete(Long id) {
 		try {
 			Optional<LectureEntity> optionalLecture = lectureRepository.findByCourseId(id);
+			Optional<ExamCourseEntity> optionalExCourse = examCourseRepository.findByCourseId(id);
 			LectureEntity lecture = new LectureEntity();
-			if(optionalLecture.isPresent()) {
+			ExamCourseEntity exCourse = new ExamCourseEntity();
+			if(optionalLecture.isPresent() || optionalExCourse.isPresent()) {
 				lecture =  optionalLecture.get();
+				exCourse = optionalExCourse.get();
 			}
+			
 			lectureRepository.delete(lecture);
+			examCourseRepository.delete(exCourse);
 			courseRepository.deleteById(id);
 			return true;
 		} catch (Exception e) {
@@ -79,9 +91,9 @@ public class CourseService implements ICourseService{
 				return data.get();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			return null;
 		}
-		return new CourseEntity();
+		return null;
 	}
 
 }

@@ -36,7 +36,6 @@ public class TestAPI {
 	}
 	
 	@GetMapping("/api/test/student")
-	@PreAuthorize("hasRole('ROLE_STUDENT')")
 	public String studentAccess() {
 		return ">>> User Contents!";
 	}

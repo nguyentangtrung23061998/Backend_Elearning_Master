@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eleaning.bean.CourseBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
-import com.eleaning.converer.CourseConverter;
+import com.eleaning.conveter.CourseConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.UserEntity;
 import com.eleaning.service.ICourseService;
@@ -62,12 +62,12 @@ public class CourseRestAPI {
 		ResponseBean responseBean = new ResponseBean();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		try {
-			List list = (List) authentication.getAuthorities();
-			boolean check = checkRole(list);
-			if(!check) {
-				responseBean.setRoleFail();
-				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
-			}
+//			List list = (List) authentication.getAuthorities();
+//			boolean check = checkRole(list);
+//			if(!check) {
+//				responseBean.setRoleFail();
+//				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+//			}
 			
 			List<CourseEntity> courses = courseService.getAll();
 			if(courses!=null) {

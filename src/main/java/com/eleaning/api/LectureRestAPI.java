@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.eleaning.bean.LectureBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
-import com.eleaning.converer.LectureConverter;
+import com.eleaning.conveter.LectureConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.LectureEntity;
 import com.eleaning.service.ICourseService;
@@ -90,7 +90,25 @@ public class LectureRestAPI {
 		}
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
-
+	@GetMapping("/courses/{courseId}")
+	private ResponseEntity<ResponseBean> getLecture(@PathVariable Long courseId) {
+		ResponseBean responseBean = new ResponseBean();
+		try {
+			LectureEntity lecture = lectureService.getLectureByCourse(courseId);
+			if(lecture != null) {
+				responseBean.setData(lecture);
+				responseBean.setSuccess();
+			}else {
+				responseBean.setNotFound();
+				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+	}
+	
 	@PostMapping()
 	private ResponseEntity<ResponseBean> addLecture(@RequestBody LectureBean lectureBean, HttpServletRequest request) {
 		ResponseBean responseBean = new ResponseBean();

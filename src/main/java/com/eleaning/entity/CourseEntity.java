@@ -3,7 +3,6 @@ package com.eleaning.entity;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -35,16 +34,20 @@ public class CourseEntity {
 	private String modifiedby;
 	
 	@OneToMany(
-		        mappedBy = "course",
-		        cascade = CascadeType.PERSIST,
-		        fetch = FetchType.EAGER
+		        mappedBy = "course"
 		    )
+	@JsonIgnore
 	private List<LectureEntity> lectures;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid", referencedColumnName = "id")
 	@JsonIgnore
     private UserEntity user;
+	
+	@OneToMany(
+	        mappedBy = "course_ex")
+	@JsonIgnore
+	private List<ExamCourseEntity> examcourses;
 
 	public CourseEntity(Long id, String name, String description, Timestamp createddate,
 			Timestamp modifieddate, String createdby, String modifiedby) {
@@ -185,4 +188,20 @@ public class CourseEntity {
 	public void setUser(UserEntity user) {
 		this.user = user;
 	}
+
+	/**
+	 * @return the examcourses
+	 */
+	public List<ExamCourseEntity> getExamcourses() {
+		return examcourses;
+	}
+
+	/**
+	 * @param examcourses the examcourses to set
+	 */
+	public void setExamcourses(List<ExamCourseEntity> examcourses) {
+		this.examcourses = examcourses;
+	}
+	
+	
 }

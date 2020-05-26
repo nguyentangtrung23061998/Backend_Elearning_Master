@@ -92,6 +92,11 @@ public class ResponseBean {
 		this.setStatus(HttpStatus.BAD_REQUEST.value());
 	}
 
+	public void setIdObjectNotFound() {
+		this.setMessages("msg.notFoundRoleUser", "Not found object");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+	}
+	
 	public void setBadRequest() {
 		this.setMessages("msg.badRequest", "Bad Request");
 		this.setStatus(HttpStatus.BAD_REQUEST.value());

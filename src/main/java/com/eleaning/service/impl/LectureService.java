@@ -73,4 +73,18 @@ public class LectureService implements ILectureService{
 		}
 	}
 
+	@Override
+	public LectureEntity getLectureByCourse(Long courseId) {
+		// TODO Auto-generated method stub
+		try {
+			Optional<LectureEntity> data = lectureRepository.findByCourseId(courseId);
+			if(data.isPresent()) {
+				return data.get();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new LectureEntity();
+	}
+
 }
