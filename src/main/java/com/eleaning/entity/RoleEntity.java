@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -34,7 +35,7 @@ public class RoleEntity {
 	@Column(name="modifiedby")
 	private String modifiedby;
 	
-	@ManyToMany(mappedBy = "role")
+	@ManyToMany(mappedBy = "role",fetch = FetchType.EAGER)
 	private Set<UserEntity> users = new HashSet<UserEntity>();
 	
 

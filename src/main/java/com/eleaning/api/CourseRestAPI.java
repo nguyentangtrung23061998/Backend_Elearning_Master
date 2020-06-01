@@ -1,5 +1,6 @@
 package com.eleaning.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,16 +20,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.eleaning.bean.CourseBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
 import com.eleaning.conveter.CourseConverter;
 import com.eleaning.entity.CourseEntity;
+import com.eleaning.entity.LectureEntity;
 import com.eleaning.entity.UserEntity;
 import com.eleaning.service.ICourseService;
 import com.eleaning.service.IUserService;
+import com.eleaning.util.Constant;
+import com.eleaning.util.Util;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -84,16 +90,17 @@ public class CourseRestAPI {
 	@PostMapping("")
 	private ResponseEntity<ResponseBean> addCourse(@RequestBody CourseBean courseBean,HttpServletRequest request){
 		String authHeader = request.getHeader("Authorization");
+		System.out.println("auth :" + authHeader);
 		ResponseBean responseBean = new ResponseBean();
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List list = (List) authentication.getAuthorities();
 		boolean check = checkRole(list);
-		if(!check) {
-			responseBean.setRoleFail();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
-		}
-		
+//		if(!check) {
+//			responseBean.setRoleFail();
+//			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+//		}
+//		
 		CourseEntity courseEntity = courseConverter.convertEntity(courseBean);
 		if(courseBean.getName() == null || courseBean.getDescription() == null) {
 			responseBean.setEnterAllRequiredFields();
@@ -101,13 +108,41 @@ public class CourseRestAPI {
 		}
 		if(courseEntity!= null) {
 			UserEntity user = userService.findByToken(authHeader);
+			System.out.println("user: " + user);
+			System.out.println("user id: "+ user.getId() + " - User full" +user.getFullname());
 			courseEntity.setUser(user);
+			System.out.println("course name: " + courseBean.getName()  + " - course id: " + courseEntity.getId());
 			CourseEntity course = courseService.save(courseEntity);
 			responseBean.setData(course);
 			responseBean.setSuccess();
 		}
 		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 	} 
+	
+	@PostMapping("/upload/{id}")
+	private ResponseEntity<ResponseBean> uploadCourse(@PathVariable long id, @RequestParam("file") MultipartFile file)
+			throws IOException {
+		CourseEntity course = courseService.findById(id);
+		ResponseBean responseBean = new ResponseBean();
+
+		if (course != null) {
+			boolean checkUpload = Util.upload(file);
+			if (checkUpload) {
+				String orginalFile = file.getOriginalFilename();
+				String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);
+				course.setImage(orginalFile);
+				
+				CourseEntity courseEntity = courseService.save(course);
+				responseBean.setData(courseEntity);
+				responseBean.setSuccess();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			} else {
+				responseBean.setFailUpload();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+		}
+		return null;
+	}
 	
 	@PutMapping("/{id}")
 	private ResponseEntity<ResponseBean> updateCourse(@PathVariable("id") Long id,@RequestBody CourseBean courseBean,HttpServletRequest request){

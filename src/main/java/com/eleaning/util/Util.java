@@ -3,16 +3,25 @@ package com.eleaning.util;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Properties;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 public class Util {
+	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\upload\\image";
+	public static final String UPLOAD_VIDEO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\video";
+	public static final String UPLOAD_AUDIO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\audio";
+	public static final String UPLOAD_DOCUMENT = "G:\\HKII-Nam4\\PTPMHDV\\upload\\document";
+	
+	
+	
 	public static String getRealIpAddr() {
 
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -317,12 +326,17 @@ public class Util {
 	}
 	
 	public static boolean upload(MultipartFile file) {
+		
+		Properties properties = new Properties();
+//		File fileMain = ResourceUtils.getFile("classpath:static");
+
+		
 		String uploadRootPath = "";
 		String orginalFile = file.getOriginalFilename();
 		
 		String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);
 		for (String extensionVideo : Constant.extensionVideo) {
-			if(extension == extensionVideo) {
+			if(extension.equals(extensionVideo)) {
 				uploadRootPath = Constant.UPLOAD_VIDEO;
 			}
 		}
@@ -341,7 +355,9 @@ public class Util {
 				uploadRootPath = Constant.UPLOAD_DOCUMENT;
 			}
 		}
+		System.out.println("uploadRoot: " + uploadRootPath);
 		File f = new File(uploadRootPath);
+		System.out.println("f: " + f);
 		if(!f.exists()) {
 			f.mkdirs();
 		}

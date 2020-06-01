@@ -1,17 +1,22 @@
 package com.eleaning.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -91,10 +96,10 @@ public class LectureRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 	@GetMapping("/courses/{courseId}")
-	private ResponseEntity<ResponseBean> getLecture(@PathVariable Long courseId) {
+	private ResponseEntity<ResponseBean> getAllLectureByCourse(@PathVariable Long courseId) {
 		ResponseBean responseBean = new ResponseBean();
 		try {
-			LectureEntity lecture = lectureService.getLectureByCourse(courseId);
+			List<LectureEntity> lecture = lectureService.getLectureByCourse(courseId);
 			if(lecture != null) {
 				responseBean.setData(lecture);
 				responseBean.setSuccess();
@@ -197,7 +202,7 @@ public class LectureRestAPI {
 			throws IOException {
 		LectureEntity lecture = lectureService.findById(id);
 		ResponseBean responseBean = new ResponseBean();
-//		System.out.println("orginame " + file.getOriginalFilename());
+
 		if (lecture != null) {
 			boolean checkUpload = Util.upload(file);
 			if (checkUpload) {
@@ -229,7 +234,7 @@ public class LectureRestAPI {
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 			} else {
 				responseBean.setFailUpload();
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
 		}
 		return null;

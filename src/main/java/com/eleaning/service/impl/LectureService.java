@@ -74,17 +74,16 @@ public class LectureService implements ILectureService{
 	}
 
 	@Override
-	public LectureEntity getLectureByCourse(Long courseId) {
-		// TODO Auto-generated method stub
+	public List<LectureEntity> getLectureByCourse(Long courseId) {
 		try {
-			Optional<LectureEntity> data = lectureRepository.findByCourseId(courseId);
-			if(data.isPresent()) {
-				return data.get();
-			}
+			
+			List<LectureEntity> result = new ArrayList<LectureEntity>();
+			lectureRepository.getAlByCourseId(courseId).forEach(result::add);
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new LectureEntity();
+		return new ArrayList<LectureEntity>();
 	}
 
 }

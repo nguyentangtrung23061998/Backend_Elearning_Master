@@ -3,7 +3,6 @@ package com.eleaning.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -81,15 +80,17 @@ public class UserRestAPI {
 			}
 			
 			List<UserEntity> users = userService.getUsers();
+			
 			MapBean map = new MapBean();
 			List listUsers = new ArrayList();
 			for (int i = 0; i < users.size(); i++) {
 				UserEntity user = new UserEntity();
 				map = new MapBean();
 				user = users.get(i);
-				map.put("data", user.getRole());
+				map.put("role", user.getRole());
 				listUsers.add(map.getAll());
 			}
+			//xử lý qua bean -> để đưa role 
 			responseBean.setData(listUsers);
 			responseBean.setSuccess();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
@@ -100,25 +101,70 @@ public class UserRestAPI {
 		return null;
 	}
 
-	@PostMapping("/upload/{id}")
-	private ResponseEntity<ResponseBean> uploadUser(@PathVariable long id, @RequestParam("file") MultipartFile file)
-			throws IOException {
-		UserEntity user = userService.findUserByid(id);
+	@GetMapping("/{id}")
+	private ResponseEntity<ResponseBean> getUserById(@PathVariable Long id) {
 		ResponseBean responseBean = new ResponseBean();
-		if (user != null) {
-			boolean checkUpload = Util.upload(file);
-			if (checkUpload) {
-				user.setImage(file.getOriginalFilename());
-				userService.save(user);
+		try {
+			UserEntity user = userService.findUserByid(id);
+			if(user != null) {
 				responseBean.setData(user);
 				responseBean.setSuccess();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-			} else {
-				responseBean.setFailUpload();
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			}else {
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
-		return null;
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+	}
+	
+	@PostMapping("")
+	private ResponseEntity<ResponseBean> addUser() {
+		ResponseBean responseBean = new ResponseBean();
+		try {
+			Long id = 1588172402901L;
+			UserEntity user = userService.findUserByid(id);
+			if(user != null) {
+				responseBean.setData(user);
+				responseBean.setSuccess();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			}else {
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+	}
+	
+	@PostMapping("/uploads/{id}")
+	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file)
+			throws IOException {
+		UserEntity user = userService.findUserByid(id);
+		ResponseBean responseBean = new ResponseBean();
+		try {
+			if (user != null) {
+				boolean checkUpload = Util.upload(file);
+				if (checkUpload) {
+					user.setImage(file.getOriginalFilename());
+					userService.save(user);
+					responseBean.setData(user);
+					responseBean.setSuccess();
+					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+				} else {
+					responseBean.setFailUpload();
+					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
@@ -137,6 +183,7 @@ public class UserRestAPI {
 			user.setPassword(passwordEncoder.encode(userBean.getPassword()));
 			user.setEmail(userBean.getEmail());
 			user.setFullname(userBean.getFullname());
+			user.setImage(userBean.getImage());
 
 			roles.add(role);
 			user.setRole(roles);

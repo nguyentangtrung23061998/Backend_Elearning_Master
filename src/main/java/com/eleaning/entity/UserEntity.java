@@ -52,12 +52,13 @@ public class UserEntity {
 
 	private String modifiedby;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "roleid"))
 	@JsonIgnore
 	private Set<RoleEntity> role = new HashSet<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<CourseEntity> course;
 
 	public UserEntity() {

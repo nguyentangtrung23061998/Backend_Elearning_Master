@@ -58,6 +58,7 @@ public class AuthRestAPI {
 
 	@PostMapping("/signin")
 	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean) {
+		
 		ResponseBean responseBean = new ResponseBean();
 		
 		loginBean.setUsername(Util.trim(loginBean.getUsername()));
@@ -67,12 +68,11 @@ public class AuthRestAPI {
 			responseBean.setEnterAllRequiredFields();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
 		UserEntity user = userService.findUser(loginBean.getUsername());
+	
 		String jwt = jwtProvider.generateJwtToken(authentication);
 		Authentication roleAuthentication = SecurityContextHolder.getContext().getAuthentication();
 		List list = (List) roleAuthentication.getAuthorities();
@@ -81,6 +81,7 @@ public class AuthRestAPI {
 		userService.save(user);
 
 		MapBean map = new MapBean();
+		map.put("id", user.getId());
 		map.put("username", user.getUsername());
 		map.put("email", user.getEmail());
 		map.put("fullname", user.getFullname());

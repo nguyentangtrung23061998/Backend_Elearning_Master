@@ -25,6 +25,8 @@ public class CourseEntity {
 	
 	private String description;
 	
+	private String image;
+	
 	private Timestamp createddate;
 	
 	private Timestamp modifieddate;
@@ -49,16 +51,23 @@ public class CourseEntity {
 	@JsonIgnore
 	private List<ExamCourseEntity> examcourses;
 
-	public CourseEntity(Long id, String name, String description, Timestamp createddate,
-			Timestamp modifieddate, String createdby, String modifiedby) {
+	public CourseEntity(Long id, @Size(min = 3, max = 50) String name, String description, String image,
+			Timestamp createddate, Timestamp modifieddate, String createdby, String modifiedby,
+			List<LectureEntity> lectures, UserEntity user, List<ExamCourseEntity> examcourses) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
+		this.image = image;
 		this.createddate = createddate;
 		this.modifieddate = modifieddate;
 		this.createdby = createdby;
 		this.modifiedby = modifiedby;
+		this.lectures = lectures;
+		this.user = user;
+		this.examcourses = examcourses;
 	}
+
+
 
 	public CourseEntity() {
 	}
@@ -97,6 +106,24 @@ public class CourseEntity {
 	public String getDescription() {
 		return description;
 	}
+	
+	/**
+	 * @return the image
+	 */
+	public String getImage() {
+		return image;
+	}
+
+
+
+	/**
+	 * @param image the image to set
+	 */
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+
 
 	/**
 	 * @param description the description to set

@@ -1,6 +1,15 @@
 package com.eleaning.util;
 
+import java.io.File;
+import java.util.Properties;
+
+import org.springframework.util.ResourceUtils;
+
 public class Constant {
+	Properties properties = new Properties();
+	
+	//public static final File file = ResourceUtils.getFile("classpath:static");
+	
 	public static final String CURRENCY_DEFAULT 			= "USD";
 	
 	public static long ACTIVE_ACCOUNT_KEY_TIME_LIMIT_CLIENT = 10 * 60000; /* 10 minutes */
@@ -34,8 +43,8 @@ public class Constant {
 	public static final String TIME_SLOT_TYPE_CLOSEDTIME 	= "CLOSEDTIME";
 	public static final String TIME_SLOT_TYPE_UNBOOKABLE 	= "UNBOOKABLE";
 	
-	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\upload\\image";
-	public static final String UPLOAD_VIDEO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\video";
-	public static final String UPLOAD_AUDIO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\audio";
-	public static final String UPLOAD_DOCUMENT = "G:\\HKII-Nam4\\PTPMHDV\\upload\\document";
+	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\images";
+	public static final String UPLOAD_VIDEO = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\video";
+	public static final String UPLOAD_AUDIO = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\audio";
+	public static final String UPLOAD_DOCUMENT = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\document";
 }
