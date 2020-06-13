@@ -2,6 +2,8 @@ package com.eleaning.security.jwt;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,12 +34,12 @@ public class JwtProvider {
 		 return Jwts.builder()
 	                .setSubject((userPrinciple.getUsername()))
 	                .setIssuedAt(new Date())
-	                .setExpiration(new Date((new Date()).getTime() + jwtExpiration*5000))
+	                .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
 	                .signWith(SignatureAlgorithm.HS512, jwtSecret)
 	                .compact();
 	}
 	
-	public boolean validateJwtToken(final String authToken) {
+	public boolean validateJwtToken(final String authToken,HttpServletRequest httpServletRequest) {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
@@ -46,7 +48,7 @@ public class JwtProvider {
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token -> Message: {}", e);
         } catch (ExpiredJwtException e) {
-            logger.error("Expired JWT token -> Message: {}", e);
+        	 httpServletRequest.setAttribute("expired",e.getMessage());
         } catch (UnsupportedJwtException e) {
             logger.error("Unsupported JWT token -> Message: {}", e);
         } catch (IllegalArgumentException e) {

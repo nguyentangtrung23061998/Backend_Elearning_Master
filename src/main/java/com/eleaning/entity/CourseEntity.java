@@ -36,9 +36,8 @@ public class CourseEntity {
 	private String modifiedby;
 	
 	@OneToMany(
-		        mappedBy = "course"
+		        mappedBy = "course",fetch=FetchType.EAGER
 		    )
-	@JsonIgnore
 	private List<LectureEntity> lectures;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

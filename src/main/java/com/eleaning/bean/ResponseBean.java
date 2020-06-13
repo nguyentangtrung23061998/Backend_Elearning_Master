@@ -182,6 +182,12 @@ public class ResponseBean {
 		this.setStatus(HttpStatus.BAD_REQUEST.value());
 		
 	}
+	
+	public void setLoginFail() {
+		this.setMessages("msg.loginFail", "Login fail");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+		
+	}
 
 //	public void setTokenTimeout() {
 //		this.setMessages("msg.timeOut", "Time out");

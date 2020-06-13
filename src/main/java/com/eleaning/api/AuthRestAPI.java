@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -58,40 +59,44 @@ public class AuthRestAPI {
 
 	@PostMapping("/signin")
 	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean) {
-		
 		ResponseBean responseBean = new ResponseBean();
-		
-		loginBean.setUsername(Util.trim(loginBean.getUsername()));
-		loginBean.setPassword(Util.trim(loginBean.getPassword()));
+		try {
+			loginBean.setUsername(Util.trim(loginBean.getUsername()));
+			loginBean.setPassword(Util.trim(loginBean.getPassword()));
 
-		if (loginBean.getUsername() == null || loginBean.getPassword() == null) {
-			responseBean.setEnterAllRequiredFields();
+			if (loginBean.getUsername() == null || loginBean.getPassword() == null) {
+				responseBean.setEnterAllRequiredFields();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+			
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword()));
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			UserEntity user = userService.findUser(loginBean.getUsername());
+
+			String jwt = jwtProvider.generateJwtToken(authentication);
+			Authentication roleAuthentication = SecurityContextHolder.getContext().getAuthentication();
+			List list = (List) roleAuthentication.getAuthorities();
+
+			user.setToken(jwtType + jwt);
+			userService.save(user);
+			MapBean map = new MapBean();
+			map.put("id", user.getId());
+			map.put("username", user.getUsername());
+			map.put("email", user.getEmail());
+			map.put("fullname", user.getFullname());
+			map.put("token", user.getToken());
+			map.put("role",list.get(0));
+
+			responseBean.setData(map.getAll());
+			responseBean.setSuccess();
+
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			
+		} catch (AuthenticationException e) {
+			responseBean.setLoginFail();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword()));
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		UserEntity user = userService.findUser(loginBean.getUsername());
-	
-		String jwt = jwtProvider.generateJwtToken(authentication);
-		Authentication roleAuthentication = SecurityContextHolder.getContext().getAuthentication();
-		List list = (List) roleAuthentication.getAuthorities();
-
-		user.setToken(jwtType + jwt);
-		userService.save(user);
-
-		MapBean map = new MapBean();
-		map.put("id", user.getId());
-		map.put("username", user.getUsername());
-		map.put("email", user.getEmail());
-		map.put("fullname", user.getFullname());
-		map.put("token", user.getToken());
-		map.put("role",list.get(0));
-
-		responseBean.setData(map.getAll());
-		responseBean.setSuccess();
-
-		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
 	@PostMapping("/signup")
