@@ -5,11 +5,9 @@ import javax.validation.constraints.Size;
 public class LectureBean {
 	@Size(min=3, max = 50)
 	private String name;
-	private Long courseId;
 	
-	public LectureBean(@Size(min = 3, max = 50) String name, Long courseId) {
+	public LectureBean(@Size(min = 3, max = 50) String name) {
 		this.name = name;
-		this.courseId = courseId;
 	}
 
 	public LectureBean() {
@@ -29,18 +27,5 @@ public class LectureBean {
 		this.name = name;
 	}
 
-	/**
-	 * @return the courseId
-	 */
-	public Long getCourseId() {
-		return courseId;
-	}
-
-	/**
-	 * @param courseId the courseId to set
-	 */
-	public void setCourseId(Long courseId) {
-		this.courseId = courseId;
-	}
 
 }

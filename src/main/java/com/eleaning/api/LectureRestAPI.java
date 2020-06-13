@@ -114,8 +114,8 @@ public class LectureRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 	}
 	
-	@PostMapping()
-	private ResponseEntity<ResponseBean> addLecture(@RequestBody LectureBean lectureBean, HttpServletRequest request) {
+	@PostMapping("/courses/{courseId}")
+	private ResponseEntity<ResponseBean> addLecture(@PathVariable Long courseId,@RequestBody LectureBean lectureBean, HttpServletRequest request) {
 		ResponseBean responseBean = new ResponseBean();
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -126,13 +126,11 @@ public class LectureRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 		
-	
-		if (lectureBean.getName() == null ||lectureBean.getCourseId()== null ) {
+		if (lectureBean.getName() == null ) {
 			responseBean.setEnterAllRequiredFields();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 		
-		Long courseId = lectureBean.getCourseId();
 		CourseEntity courseEntity = courseService.findById(courseId);
 
 		LectureEntity lectureEntity = lectureConverter.convertEntity(lectureBean);
