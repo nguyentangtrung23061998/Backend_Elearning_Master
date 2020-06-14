@@ -1,8 +1,15 @@
 package com.eleaning.bean;
 
+import java.util.List;
+
 import javax.validation.constraints.Size;
 
+import com.eleaning.entity.LectureEntity;
+
 public class CourseBean {
+	
+	private Long id;
+	
 	@Size(min = 3, max = 50)
 	private String name;
 
@@ -11,15 +18,36 @@ public class CourseBean {
 	private String description;
 
 	private boolean isActive;
+	
+	private List<LectureEntity> letures;
 
-	public CourseBean(@Size(min = 3, max = 50) String name, String image, String description, boolean isActive) {
+	public CourseBean(Long id, @Size(min = 3, max = 50) String name, String image, String description, boolean isActive,
+			List<LectureEntity> letures) {
+		this.id = id;
 		this.name = name;
 		this.image = image;
 		this.description = description;
 		this.isActive = isActive;
+		this.letures = letures;
 	}
 
+
 	public CourseBean() {
+	}
+	
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	/**
@@ -74,5 +102,22 @@ public class CourseBean {
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
+
+
+	/**
+	 * @return the letures
+	 */
+	public List<LectureEntity> getLetures() {
+		return letures;
+	}
+
+
+	/**
+	 * @param letures the letures to set
+	 */
+	public void setLetures(List<LectureEntity> letures) {
+		this.letures = letures;
+	}
+
 	
 }

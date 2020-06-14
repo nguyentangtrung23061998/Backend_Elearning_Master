@@ -32,6 +32,7 @@ import com.eleaning.bean.CourseUserBean;
 import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
+import com.eleaning.bean.UserAboutCourseBean;
 import com.eleaning.bean.UserBean;
 import com.eleaning.conveter.CourseConverter;
 import com.eleaning.conveter.UserConverter;
@@ -138,16 +139,17 @@ public class UserRestAPI {
 		MapBean mapBean = new MapBean();
 		try {
 			List<CourseEntity> courses = courseService.getCoursesByUserId(id);
-			CourseUserBean courseUserBean = new CourseUserBean();
-			List<CourseUserBean> courseUserBeanData = new ArrayList<CourseUserBean>();
-			for (CourseEntity courseEntity : courses) {
-				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
-				UserBean userBean = userConverter.convertBean(userEntity);
-				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
-				courseUserBean = new CourseUserBean(courseBean,userBean);
-				courseUserBeanData.add(courseUserBean);
-			}
-			responseBean.setData(courseUserBeanData);
+//			CourseUserBean courseUserBean = new CourseUserBean();
+//			List<CourseUserBean> courseUserBeanData = new ArrayList<CourseUserBean>();
+//			for (CourseEntity courseEntity : courses) {
+//				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
+//				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
+//				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+//				System.out.println("role: " + userBean.getRole());
+//				courseUserBean = new CourseUserBean(courseBean,userBean);
+//				courseUserBeanData.add(courseUserBean);
+//			}
+			responseBean.setData(courses);
 			responseBean.setSuccess();
 			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 		} catch (Exception e) {

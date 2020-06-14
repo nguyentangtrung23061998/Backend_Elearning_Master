@@ -30,11 +30,13 @@ import com.eleaning.bean.CourseUserBean;
 import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
+import com.eleaning.bean.UserAboutCourseBean;
 import com.eleaning.bean.UserBean;
 import com.eleaning.conveter.CourseConverter;
 import com.eleaning.conveter.UserConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.LectureEntity;
+import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
 import com.eleaning.service.ICourseService;
 import com.eleaning.service.IUserService;
@@ -90,8 +92,11 @@ public class CourseRestAPI {
 			
 			for (CourseEntity courseEntity : courses) {
 				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
-				UserBean userBean = userConverter.convertBean(userEntity);
+				Iterable<RoleEntity> iterable = userEntity.getRole();
+				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
+				userBean.setRole(iterable.iterator().next().getRolename());
 				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+				courseBean.setLetures(courseEntity.getLectures());
 				courseUserBean = new CourseUserBean(courseBean,userBean);
 				courseUserBeanData.add(courseUserBean);
 			}

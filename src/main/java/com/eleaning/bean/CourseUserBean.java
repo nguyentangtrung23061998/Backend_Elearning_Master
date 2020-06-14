@@ -1,40 +1,45 @@
 package com.eleaning.bean;
 
 public class CourseUserBean {
-	private CourseBean courseBean;
-	private UserBean userBean;
+	private CourseBean course;
+	private UserAboutCourseBean teacher;
 	
 	public CourseUserBean(){}
+
+	/**
+	 * @return the course
+	 */
+	public CourseBean getCourse() {
+		return course;
+	}
 	
-	public CourseUserBean(CourseBean courseBean, UserBean userBean) {
-		this.courseBean = courseBean;
-		this.userBean = userBean;
+
+	public CourseUserBean(CourseBean course, UserAboutCourseBean teacher) {
+		this.course = course;
+		this.teacher = teacher;
 	}
-	
+
 	/**
-	 * @return the courseBean
+	 * @param course the course to set
 	 */
-	public CourseBean getCourseBean() {
-		return courseBean;
+	public void setCourse(CourseBean course) {
+		this.course = course;
 	}
+
 	/**
-	 * @param courseBean the courseBean to set
+	 * @return the teacher
 	 */
-	public void setCourseBean(CourseBean courseBean) {
-		this.courseBean = courseBean;
+	public UserAboutCourseBean getTeacher() {
+		return teacher;
 	}
+
 	/**
-	 * @return the userBean
+	 * @param teacher the teacher to set
 	 */
-	public UserBean getUserBean() {
-		return userBean;
+	public void setTeacher(UserAboutCourseBean teacher) {
+		this.teacher = teacher;
 	}
-	/**
-	 * @param userBean the userBean to set
-	 */
-	public void setUserBean(UserBean userBean) {
-		this.userBean = userBean;
-	}
+
 	
 	
 }
