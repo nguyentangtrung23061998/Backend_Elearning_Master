@@ -76,6 +76,11 @@ public class ResponseBean {
 	public void setData(Object data) {
 		this.data = data;
 	}
+	
+	public void setCouseIdNotFound() {
+		this.setMessages("msg.notFound", "Course is not found");
+		this.setStatus(HttpStatus.NOT_FOUND.value());
+	}
 
 	public void setNotFound() {
 		this.setMessages("msg.notFound", "Not found");

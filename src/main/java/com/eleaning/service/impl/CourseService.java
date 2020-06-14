@@ -91,7 +91,19 @@ public class CourseService implements ICourseService{
 				return data.get();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
+		}
+		return new CourseEntity();
+	}
+
+	@Override
+	public List<CourseEntity> getCoursesByUserId(Long userId) {
+		try {
+			List<CourseEntity> results = courseRepository.getAlByCourseId(userId);
+			return results;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

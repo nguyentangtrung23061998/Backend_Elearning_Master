@@ -58,7 +58,7 @@ public class AuthRestAPI {
 	private static String jwtType = "Bearer ";
 
 	@PostMapping("/signin")
-	public ResponseEntity<ResponseBean> authenicateUser(@Valid @RequestBody LoginBean loginBean) {
+	public ResponseEntity<ResponseBean> authenicateUser(@RequestBody LoginBean loginBean) {
 		ResponseBean responseBean = new ResponseBean();
 		try {
 			loginBean.setUsername(Util.trim(loginBean.getUsername()));
@@ -102,6 +102,7 @@ public class AuthRestAPI {
 	@PostMapping("/signup")
 	public ResponseEntity<ResponseBean> registerUser(@RequestBody SignUpBean signupBean) {
 		ResponseBean responseBean = new ResponseBean();
+		
 		if (userService.existsByUsername(signupBean.getUsername())) {
 			responseBean.setIsExisting();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);

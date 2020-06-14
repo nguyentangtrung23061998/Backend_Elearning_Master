@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +27,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eleaning.bean.CourseBean;
+import com.eleaning.bean.CourseUserBean;
 import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
 import com.eleaning.bean.UserBean;
+import com.eleaning.conveter.CourseConverter;
 import com.eleaning.conveter.UserConverter;
+import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
+import com.eleaning.service.ICourseService;
 import com.eleaning.service.IRoleService;
 import com.eleaning.service.IUserService;
 import com.eleaning.util.Util;
@@ -52,6 +58,12 @@ public class UserRestAPI {
 
 	@Autowired
 	private UserConverter userConverter;
+	
+	@Autowired
+	private CourseConverter courseConverter;
+	
+	@Autowired
+	private ICourseService courseService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -120,25 +132,50 @@ public class UserRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 	
-	@PostMapping("")
-	private ResponseEntity<ResponseBean> addUser() {
+	@GetMapping("/{id}/courses")
+	private ResponseEntity<ResponseBean> getCourseByuserId(@PathVariable Long id) {
 		ResponseBean responseBean = new ResponseBean();
+		MapBean mapBean = new MapBean();
 		try {
-			Long id = 1588172402901L;
-			UserEntity user = userService.findUserByid(id);
-			if(user != null) {
-				responseBean.setData(user);
-				responseBean.setSuccess();
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-			}else {
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			List<CourseEntity> courses = courseService.getCoursesByUserId(id);
+			CourseUserBean courseUserBean = new CourseUserBean();
+			List<CourseUserBean> courseUserBeanData = new ArrayList<CourseUserBean>();
+			for (CourseEntity courseEntity : courses) {
+				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
+				UserBean userBean = userConverter.convertBean(userEntity);
+				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+				courseUserBean = new CourseUserBean(courseBean,userBean);
+				courseUserBeanData.add(courseUserBean);
 			}
+			responseBean.setData(courseUserBeanData);
+			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
+	
+//	@PostMapping("")
+//	private ResponseEntity<ResponseBean> addUser() {
+//		ResponseBean responseBean = new ResponseBean();
+//		try {
+//			Long id = 1588172402901L;
+//			UserEntity user = userService.findUserByid(id);
+//			if(user != null) {
+//				responseBean.setData(user);
+//				responseBean.setSuccess();
+//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+//			}else {
+//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//			}
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+//	}
 	
 	@PostMapping("/uploads/{id}")
 	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file)

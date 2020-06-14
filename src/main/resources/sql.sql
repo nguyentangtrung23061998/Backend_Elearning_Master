@@ -27,7 +27,8 @@ CREATE TABLE `course` (
   `name` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `userid` bigint(20) NOT NULL,
+  `is_Active` bit(1) DEFAULT NULL,
+  `userid` bigint(20) DEFAULT NULL,
   `createddate` timestamp NULL DEFAULT NULL,
   `modifieddate` timestamp NULL DEFAULT NULL,
   `createdby` varchar(100) DEFAULT NULL,
@@ -44,7 +45,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES (1589007336704,'Tense Basic','Course is perfect','english_15.png',1587713344988,'2020-05-09 06:55:37','2020-05-30 16:43:09',NULL,NULL),(1589007354669,'Tense Advance','Course is very perfect ','english_14.jpg',1587713344988,'2020-05-09 06:55:55','2020-05-30 16:45:58',NULL,NULL),(1589007399525,'Condition bacsic','This is difficult','english12.jpg',1587713344988,'2020-05-09 06:56:40','2020-05-30 16:46:35',NULL,NULL),(1590859121340,'Condition Advance','This is difficult','enlisgh_10.png',1590851786213,'2020-05-30 17:18:41','2020-05-30 17:21:10',NULL,NULL),(1590859171612,'Compare Basic','This is basic','english_5.jpg',1590851786213,'2020-05-30 17:19:32','2020-05-30 17:22:04',NULL,NULL),(1590859181221,'Compare Advance','This is advance','59665294-learn-english-red-vector-learn-english-flat-vector-learn-english-background-learn-english.jpg',1590851786213,'2020-05-30 17:19:41','2020-05-30 17:22:26',NULL,NULL),(1590859200771,'Enough grammar','This is basic','english_2.jpg',1590851786213,'2020-05-30 17:20:01','2020-05-30 17:22:42',NULL,NULL),(1590859224462,'Enough grammar v2','This is nomarl','enlish7.jpg',1590851786213,'2020-05-30 17:20:24','2020-05-31 07:53:31',NULL,NULL);
+INSERT INTO `course` VALUES (1589007336704,'Tense Basic','Course is perfect','english_15.png',_binary '',1590768028203,'2020-05-09 06:55:37','2020-05-30 16:43:09',NULL,NULL),(1589007354669,'Tense Advance','Course is very perfect ','english_14.jpg',_binary '',1590768028203,'2020-05-09 06:55:55','2020-05-30 16:45:58',NULL,NULL),(1589007399525,'Condition bacsic','This is difficult','english12.jpg',_binary '',1590768028203,'2020-05-09 06:56:40','2020-05-30 16:46:35',NULL,NULL),(1590859121340,'Condition Advance','This is difficult','enlisgh_10.png',_binary '',1590851786213,'2020-05-30 17:18:41','2020-05-30 17:21:10',NULL,NULL),(1590859171612,'Compare Basic','This is basic','english_5.jpg',_binary '',1590851786213,'2020-05-30 17:19:32','2020-05-30 17:22:04',NULL,NULL),(1590859181221,'Compare Advance','This is advance','59665294-learn-english-red-vector-learn-english-flat-vector-learn-english-background-learn-english.jpg',_binary '',1590851786213,'2020-05-30 17:19:41','2020-05-30 17:22:26',NULL,NULL),(1590859200771,'Enough grammar','This is basic','english_2.jpg',_binary '',1590851786213,'2020-05-30 17:20:01','2020-05-30 17:22:42',NULL,NULL),(1590859224462,'Enough grammar v2','This is nomarl','enlish7.jpg',_binary '',1590851786213,'2020-05-30 17:20:24','2020-05-31 07:53:31',NULL,NULL),(1592063113295,'English Easy','English is easy',NULL,_binary '',1590768028203,'2020-06-13 15:45:13','2020-06-13 15:53:41',NULL,NULL);
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -268,7 +269,7 @@ CREATE TABLE `lecture` (
 
 LOCK TABLES `lecture` WRITE;
 /*!40000 ALTER TABLE `lecture` DISABLE KEYS */;
-INSERT INTO `lecture` VALUES (1589007336704,'Present Tense','simple-present.jpg','bai1.mp4',NULL,NULL,1589007336704,NULL,'2020-05-27 15:47:09',NULL,NULL),(1589007336705,'Present Advance',NULL,'present_bai2.mp4',NULL,NULL,1589007336704,NULL,'2020-05-28 11:14:46',NULL,NULL),(1589007336706,'Past Basic',NULL,'Present Tense - Learn English grammar through conversations.mp4',NULL,NULL,1589007336704,NULL,'2020-05-29 15:21:44',NULL,NULL),(1589007336707,'Past Advance',NULL,'past_advance.mp4',NULL,NULL,1589007354669,NULL,'2020-05-29 16:05:27',NULL,NULL),(1589007336708,'Fureture Basic',NULL,'Grammar Andy- Future Simple.mp4',NULL,NULL,1589007354669,NULL,'2020-05-29 16:10:38',NULL,NULL),(1589007336709,'Fureture Advance',NULL,'Grammar Andy- Future Simple.mp4',NULL,NULL,1589007336704,NULL,'2020-05-29 16:13:04',NULL,NULL);
+INSERT INTO `lecture` VALUES (1589007336704,'English advance','simple-present.jpg','bai1.mp4',NULL,NULL,1589007336704,NULL,'2020-06-13 16:07:24',NULL,NULL),(1589007336705,'Present Advance',NULL,'present_bai2.mp4',NULL,NULL,1589007336704,NULL,'2020-05-28 11:14:46',NULL,NULL),(1589007336706,'Past Basic',NULL,'Present Tense - Learn English grammar through conversations.mp4',NULL,NULL,1589007336704,NULL,'2020-05-29 15:21:44',NULL,NULL),(1589007336707,'Past Advance',NULL,'past_advance.mp4',NULL,NULL,1589007354669,NULL,'2020-05-29 16:05:27',NULL,NULL),(1589007336708,'Fureture Basic',NULL,'Grammar Andy- Future Simple.mp4',NULL,NULL,1589007354669,NULL,'2020-05-29 16:10:38',NULL,NULL),(1589007336709,'Fureture Advance',NULL,'Grammar Andy- Future Simple.mp4',NULL,NULL,1589007336704,NULL,'2020-05-29 16:13:04',NULL,NULL),(1592068099890,'English advance v2',NULL,NULL,NULL,NULL,1592063113295,'2020-06-13 17:08:20',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `lecture` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -364,7 +365,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1590768028203,'admin','$2a$10$ca1BxF6YDDGz.DJ21jOPCO7T2yfe1IVpazM3gpbqCJzcNYCobuwoq','admin@gmail.com','','','Nguyen Trung','2020-05-29 16:00:28','2020-05-29 16:00:28','',''),(1590851786213,'trungdeptrai','$2a$10$/8thMisvIBarc5bU0q6DsemxXt1qkTOQoYQ1KHb2dYUfM8cR39gMe','ntt@gmail.com','https://firebasestorage.googleapis.com/v0/b/app-elearning-english.appspot.com/o/images%2F25de2ea8-47cb-478e-8260-caafd744f863.jpg?alt=media&token=17b75654-4431-48e0-ba72-04de994ea113','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0cnVuZ2RlcHRyYWkiLCJpYXQiOjE1OTA5MjAxODYsImV4cCI6MTU5MTM1MjE4Nn0.qu3YlnyvmMhCQxPxzD5f1J9_N13vj1kmZv0ADtK-Akr8N78KJC4lNfDi7oB0MbPBrhJ7byI-igQgEvUT0t9Wgw','Nguyen Tang Trung','2020-05-30 15:16:26','2020-05-31 10:18:44','','');
+INSERT INTO `user` VALUES (1590768028203,'admin','$2a$10$ca1BxF6YDDGz.DJ21jOPCO7T2yfe1IVpazM3gpbqCJzcNYCobuwoq','admin@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTU5MjEyNDE5NiwiZXhwIjoxNTkyMTQyMTk2fQ.R1sJ0qaN1IJnehEBbJuDQVSJFlbD2XJ8BtpFsEpKwI3fUJm66En6Rq1v5b1rV6olTUlJReZ1WvB0DRuWftnauA','Nguyen Trung','2020-05-29 16:00:28','2020-06-14 08:43:16','',''),(1590851786213,'trungdeptrai','$2a$10$/8thMisvIBarc5bU0q6DsemxXt1qkTOQoYQ1KHb2dYUfM8cR39gMe','ntt@gmail.com','https://firebasestorage.googleapis.com/v0/b/app-elearning-english.appspot.com/o/images%2F25de2ea8-47cb-478e-8260-caafd744f863.jpg?alt=media&token=17b75654-4431-48e0-ba72-04de994ea113','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0cnVuZ2RlcHRyYWkiLCJpYXQiOjE1OTIxMjQxNjYsImV4cCI6MTU5MjE0MjE2Nn0.mbeqid31TWb-PidRfezZkrS_JjPv2B8L3MZx5y8GRJvDnHPkGlWUuITiVmDx64gGqvUZ5e6ruT2-2u_E_z772Q','Nguyen Tang Trung','2020-05-30 15:16:26','2020-06-14 08:42:46','','');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -408,4 +409,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-01 20:15:29
+-- Dump completed on 2020-06-14 16:53:37

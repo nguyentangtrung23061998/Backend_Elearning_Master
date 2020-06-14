@@ -3,6 +3,7 @@ package com.eleaning.entity;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -26,6 +27,9 @@ public class CourseEntity {
 	private String description;
 	
 	private String image;
+	
+	@Column(name="is_Active")
+	private boolean isActive;
 	
 	private Timestamp createddate;
 	
@@ -51,12 +55,14 @@ public class CourseEntity {
 	private List<ExamCourseEntity> examcourses;
 
 	public CourseEntity(Long id, @Size(min = 3, max = 50) String name, String description, String image,
-			Timestamp createddate, Timestamp modifieddate, String createdby, String modifiedby,
-			List<LectureEntity> lectures, UserEntity user, List<ExamCourseEntity> examcourses) {
+			boolean isActive, Timestamp createddate, Timestamp modifieddate,
+			String createdby, String modifiedby, List<LectureEntity> lectures, UserEntity user,
+			List<ExamCourseEntity> examcourses) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.image = image;
+		this.isActive = isActive;
 		this.createddate = createddate;
 		this.modifieddate = modifieddate;
 		this.createdby = createdby;
@@ -65,8 +71,6 @@ public class CourseEntity {
 		this.user = user;
 		this.examcourses = examcourses;
 	}
-
-
 
 	public CourseEntity() {
 	}
@@ -228,6 +232,30 @@ public class CourseEntity {
 	public void setExamcourses(List<ExamCourseEntity> examcourses) {
 		this.examcourses = examcourses;
 	}
-	
-	
+
+	/**
+	 * @return the isActive
+	 */
+	public boolean isActive() {
+		return isActive;
+	}
+
+	/**
+	 * @param isActive the isActive to set
+	 */
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "CourseEntity [id=" + id + ", name=" + name + ", description=" + description + ", image=" + image
+				+ ", isActive=" + isActive + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ ", createdby=" + createdby + ", modifiedby=" + modifiedby + ", lectures=" + lectures + ", user="
+				+ user + ", examcourses=" + examcourses + "]";
+	}
+
 }

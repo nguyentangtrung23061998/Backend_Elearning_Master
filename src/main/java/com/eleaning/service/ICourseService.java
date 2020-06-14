@@ -9,4 +9,5 @@ public interface ICourseService {
 	public List<CourseEntity> getAll();
 	public boolean delete(Long id);
 	public CourseEntity findById(Long id);
+	public List<CourseEntity> getCoursesByUserId(Long userId);
 }
