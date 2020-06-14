@@ -78,12 +78,12 @@ public class CourseRestAPI {
 		ResponseBean responseBean = new ResponseBean();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		try {
-			List list = (List) authentication.getAuthorities();
-			boolean check = checkRole(list);
-			if(!check) {
-				responseBean.setRoleFail();
-				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
-			}
+//			List list = (List) authentication.getAuthorities();
+//			boolean check = checkRole(list);
+//			if(!check) {
+//				responseBean.setRoleFail();
+//				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+//			}
 			
 			List<CourseEntity> courses = courseService.getAll();
 			
