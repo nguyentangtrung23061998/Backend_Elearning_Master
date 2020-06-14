@@ -60,6 +60,11 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<CourseEntity> course;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "student_course_enrolement", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "courseid"))
+	@JsonIgnore
+	private Set<CourseEntity> courser_enroll = new HashSet<>();
 
 	public UserEntity() {
 	}
@@ -269,4 +274,21 @@ public class UserEntity {
 	public void setCourse(List<CourseEntity> course) {
 		this.course = course;
 	}
+
+	/**
+	 * @return the courser_enroll
+	 */
+	public Set<CourseEntity> getCourser_enroll() {
+		return courser_enroll;
+	}
+
+	/**
+	 * @param courser_enroll the courser_enroll to set
+	 */
+	public void setCourser_enroll(Set<CourseEntity> courser_enroll) {
+		this.courser_enroll = courser_enroll;
+	}
+
+	
+	
 }

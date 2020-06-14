@@ -117,8 +117,10 @@ public class CourseRestAPI {
 		try {
 			CourseEntity course = courseService.findById(id);
 			UserEntity user = userService.findUserByid(course.getUser().getId());
+			
 			mapBean.put("course", course);
 			mapBean.put("user",user);
+			mapBean.put("totalStudentEnroll",course.getUsers().size());
 			
 			responseBean.setData(mapBean.getAll());
 			responseBean.setSuccess();

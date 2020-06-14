@@ -1,13 +1,16 @@
 package com.eleaning.entity;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -44,7 +47,7 @@ public class CourseEntity {
 		    )
 	private List<LectureEntity> lectures;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
     @JoinColumn(name = "userid", referencedColumnName = "id")
 	@JsonIgnore
     private UserEntity user;
@@ -53,6 +56,10 @@ public class CourseEntity {
 	        mappedBy = "course_ex")
 	@JsonIgnore
 	private List<ExamCourseEntity> examcourses;
+
+	@ManyToMany(mappedBy = "courser_enroll",fetch = FetchType.EAGER)
+	@JsonIgnore
+	private Set<UserEntity> users = new HashSet<UserEntity>();
 
 	public CourseEntity(Long id, @Size(min = 3, max = 50) String name, String description, String image,
 			boolean isActive, Timestamp createddate, Timestamp modifieddate,
@@ -245,6 +252,22 @@ public class CourseEntity {
 	 */
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+	
+	
+	
+	/**
+	 * @return the users
+	 */
+	public Set<UserEntity> getUsers() {
+		return users;
+	}
+
+	/**
+	 * @param users the users to set
+	 */
+	public void setUsers(Set<UserEntity> users) {
+		this.users = users;
 	}
 
 	/* (non-Javadoc)
