@@ -147,15 +147,35 @@ public class CourseRestAPI {
 		}
 
 		CourseEntity courseEntity = courseConverter.convertEntity(courseBean);
-		if(courseBean.getName() == null || courseBean.getDescription() == null) {
-			responseBean.setEnterAllRequiredFields();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-		}
+//		if(courseBean.getName() == null || courseBean.getDescription() == null) {
+//			responseBean.setEnterAllRequiredFields();
+//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//		}
 		if(courseEntity!= null) {
+			CourseUserBean courseUserBean = new CourseUserBean();
+			CourseBean courseBeanData = new CourseBean();
+			
 			UserEntity user = userService.findByToken(authHeader);
 			courseEntity.setUser(user);
+			
+			UserEntity userEntityRoleTeacher = userService.findUserByid(courseEntity.getUser().getId());
+			UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntityRoleTeacher);
+			
+			Iterable<RoleEntity> role = userEntityRoleTeacher.getRole();
+			
+			// xử lí course
+			System.out.println("Course bean:" + courseBean.isActive());
 			CourseEntity course = courseService.save(courseEntity);
-			responseBean.setData(course);
+			
+			Integer userJoinCourse = course.getUsers().size();
+			
+			courseBean = courseConverter.convertBean(course);
+			
+			courseUserBean.setCourse(courseBean);
+			courseUserBean.setTeacher(userBean);
+			userBean.setRole(role.iterator().next().getRolename());
+			
+			responseBean.setData(courseUserBean);
 			responseBean.setSuccess();
 		}
 		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
@@ -175,6 +195,7 @@ public class CourseRestAPI {
 				course.setImage(orginalFile);
 				
 				CourseEntity courseEntity = courseService.save(course);
+			
 				responseBean.setData(courseEntity);
 				responseBean.setSuccess();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
@@ -199,17 +220,28 @@ public class CourseRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 		}
 		
-		if(courseBean.getName() == null || courseBean.getDescription() == null) {
-			responseBean.setEnterAllRequiredFields();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-		}
+//		if(courseBean.getName() == null || courseBean.getDescription() == null) {
+//			responseBean.setEnterAllRequiredFields();
+//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//		}
 		
 		CourseEntity courseEntity = courseService.findById(id);
 		if(courseEntity!= null) {
 			courseEntity.setName(courseBean.getName());
 			courseEntity.setDescription(courseBean.getDescription());
 			CourseEntity course = courseService.save(courseEntity);
-			responseBean.setData(course);
+			
+			UserEntity userEntityRoleTeacher = userService.findUserByid(courseEntity.getUser().getId());
+			UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntityRoleTeacher);
+			Iterable<RoleEntity> role = userEntityRoleTeacher.getRole();
+			
+			courseBean = courseConverter.convertBean(course);
+			userBean.setRole(role.iterator().next().getRolename());
+			
+			CourseUserBean courseUserBean = new CourseUserBean(courseBean, userBean);
+			
+			
+			responseBean.setData(courseUserBean);
 			responseBean.setSuccess();
 		}
 		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);

@@ -367,6 +367,7 @@ public class Util {
 				File serverFile = new File(uploadRootPath + "\\" + name);
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				stream.write(file.getBytes());
+				stream.flush();
 				stream.close();
 				return true;
 			} catch (Exception e) {
