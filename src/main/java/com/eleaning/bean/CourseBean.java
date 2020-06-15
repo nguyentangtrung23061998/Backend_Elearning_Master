@@ -19,15 +19,18 @@ public class CourseBean {
 
 	private boolean isActive;
 	
+	private Integer totalStudentEnroll;
+	
 	private List<LectureEntity> letures;
 
 	public CourseBean(Long id, @Size(min = 3, max = 50) String name, String image, String description, boolean isActive,
-			List<LectureEntity> letures) {
+			Integer totalStudentEnroll, List<LectureEntity> letures) {
 		this.id = id;
 		this.name = name;
 		this.image = image;
 		this.description = description;
 		this.isActive = isActive;
+		this.totalStudentEnroll = totalStudentEnroll;
 		this.letures = letures;
 	}
 
@@ -119,5 +122,20 @@ public class CourseBean {
 		this.letures = letures;
 	}
 
-	
+
+	/**
+	 * @return the totalStudentEnroll
+	 */
+	public Integer getTotalStudentEnroll() {
+		return totalStudentEnroll;
+	}
+
+
+	/**
+	 * @param totalStudentEnroll the totalStudentEnroll to set
+	 */
+	public void setTotalStudentEnroll(Integer totalStudentEnroll) {
+		this.totalStudentEnroll = totalStudentEnroll;
+	}
+
 }

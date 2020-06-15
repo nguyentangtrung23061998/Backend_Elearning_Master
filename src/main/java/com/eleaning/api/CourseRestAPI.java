@@ -96,6 +96,7 @@ public class CourseRestAPI {
 				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
 				userBean.setRole(iterable.iterator().next().getRolename());
 				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+				courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
 				courseBean.setLetures(courseEntity.getLectures());
 				courseUserBean = new CourseUserBean(courseBean,userBean);
 				courseUserBeanData.add(courseUserBean);
@@ -163,13 +164,12 @@ public class CourseRestAPI {
 			
 			Iterable<RoleEntity> role = userEntityRoleTeacher.getRole();
 			
-			// xử lí course
-			System.out.println("Course bean:" + courseBean.isActive());
 			CourseEntity course = courseService.save(courseEntity);
 			
 			Integer userJoinCourse = course.getUsers().size();
 			
 			courseBean = courseConverter.convertBean(course);
+			courseBean.setTotalStudentEnroll(userJoinCourse);
 			
 			courseUserBean.setCourse(courseBean);
 			courseUserBean.setTeacher(userBean);
@@ -220,11 +220,6 @@ public class CourseRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 		}
 		
-//		if(courseBean.getName() == null || courseBean.getDescription() == null) {
-//			responseBean.setEnterAllRequiredFields();
-//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-//		}
-		
 		CourseEntity courseEntity = courseService.findById(id);
 		if(courseEntity!= null) {
 			courseEntity.setName(courseBean.getName());
@@ -233,13 +228,16 @@ public class CourseRestAPI {
 			
 			UserEntity userEntityRoleTeacher = userService.findUserByid(courseEntity.getUser().getId());
 			UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntityRoleTeacher);
-			Iterable<RoleEntity> role = userEntityRoleTeacher.getRole();
 			
-			courseBean = courseConverter.convertBean(course);
+			Integer userJoinCourse = course.getUsers().size();
+			
+			Iterable<RoleEntity> role = userEntityRoleTeacher.getRole();
 			userBean.setRole(role.iterator().next().getRolename());
 			
-			CourseUserBean courseUserBean = new CourseUserBean(courseBean, userBean);
+			courseBean = courseConverter.convertBean(course);
+			courseBean.setTotalStudentEnroll(userJoinCourse);
 			
+			CourseUserBean courseUserBean = new CourseUserBean(courseBean, userBean);
 			
 			responseBean.setData(courseUserBean);
 			responseBean.setSuccess();
