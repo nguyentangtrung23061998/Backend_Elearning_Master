@@ -19,7 +19,7 @@ public class CourseBean {
 
 	private boolean isActive;
 	
-	private Integer totalStudentEnroll;
+	private Integer totalStudentEnroll = 0;
 	
 	private List<LectureEntity> letures;
 

@@ -72,17 +72,16 @@ public class LectureRestAPI {
 	}
 
 	@GetMapping("")
-	private ResponseEntity<ResponseBean> getLecture(HttpServletRequest request) {
-		String authHeader = request.getHeader("Authorization");
+	private ResponseEntity<ResponseBean> getLecture() {
 		ResponseBean responseBean = new ResponseBean();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		try {
 			List list = (List) authentication.getAuthorities();
 			boolean check = checkRole(list);
-			if (!check) {
-				responseBean.setRoleFail();
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-			}
+//			if (!check) {
+//				responseBean.setRoleFail();
+//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//			}
 
 			List<LectureEntity> lectures = lectureService.getAll();
 			if (lectures != null) {
@@ -95,6 +94,31 @@ public class LectureRestAPI {
 		}
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
+	
+	@GetMapping("/{id}")
+	private ResponseEntity<ResponseBean> getLectureById(@PathVariable Long id) {
+		ResponseBean responseBean = new ResponseBean();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			List list = (List) authentication.getAuthorities();
+//			boolean check = checkRole(list);
+//			if (!check) {
+//				responseBean.setRoleFail();
+//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//			}
+
+			LectureEntity lectureEntity = lectureService.findById(id);
+			if (lectureEntity != null) {
+				responseBean.setData(lectureEntity);
+				responseBean.setSuccess();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+	}
+	
 	@GetMapping("/courses/{courseId}")
 	private ResponseEntity<ResponseBean> getAllLectureByCourse(@PathVariable Long courseId) {
 		ResponseBean responseBean = new ResponseBean();

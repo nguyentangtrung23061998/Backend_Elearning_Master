@@ -18,6 +18,9 @@ import com.eleaning.repository.ICourseRepository;
 import com.eleaning.repository.IExamCourseRepository;
 import com.eleaning.repository.ILectureRepository;
 import com.eleaning.service.ICourseService;
+import com.eleaning.service.IExamCourseService;
+import com.eleaning.service.ILectureService;
+import com.eleaning.service.IUserService;
 
 @Service
 public class CourseService implements ICourseService{
@@ -26,10 +29,12 @@ public class CourseService implements ICourseService{
 	private ICourseRepository courseRepository;
 	
 	@Autowired
-	private ILectureRepository lectureRepository;
+	private ILectureService lectureService;
 	
 	@Autowired
-	private IExamCourseRepository examCourseRepository;
+	private IExamCourseService examCourseService;
+	
+	@Autowired IUserService userService;
 	
 	@Override
 	public CourseEntity save(CourseEntity course) {
@@ -52,7 +57,7 @@ public class CourseService implements ICourseService{
 	@Override
 	public List<CourseEntity> getAll() {
 		try {
-			List<CourseEntity> result = new ArrayList<CourseEntity>();
+			List<CourseEntity> result =new ArrayList<CourseEntity>();
 			courseRepository.findAll().forEach(result::add);
 			return result;
 		} catch (Exception e) {
@@ -64,17 +69,19 @@ public class CourseService implements ICourseService{
 	@Override
 	public boolean delete(Long id) {
 		try {
-			Optional<LectureEntity> optionalLecture = lectureRepository.findByCourseId(id);
-			Optional<ExamCourseEntity> optionalExCourse = examCourseRepository.findByCourseId(id);
-			LectureEntity lecture = new LectureEntity();
-			ExamCourseEntity exCourse = new ExamCourseEntity();
-			if(optionalLecture.isPresent() || optionalExCourse.isPresent()) {
-				lecture =  optionalLecture.get();
-				exCourse = optionalExCourse.get();
+//			Optional<LectureEntity> optionalLecture = lectureRepository.findByCourseId(id);
+			List<LectureEntity> getLectures = lectureService.getLectureByCourse(id);
+			List<ExamCourseEntity> exCourses = examCourseService.getByElementCourseId(id);
+		
+			for (LectureEntity lecture : getLectures) {
+				lectureService.delete(lecture.getId());
 			}
 			
-			lectureRepository.delete(lecture);
-			examCourseRepository.delete(exCourse);
+			for(ExamCourseEntity exCourse : exCourses) {
+				examCourseService.delete(exCourse.getId());
+			}
+			
+			
 			courseRepository.deleteById(id);
 			return true;
 		} catch (Exception e) {
@@ -94,7 +101,7 @@ public class CourseService implements ICourseService{
 			e.printStackTrace();
 			return null;
 		}
-		return new CourseEntity();
+		return null;
 	}
 
 	@Override

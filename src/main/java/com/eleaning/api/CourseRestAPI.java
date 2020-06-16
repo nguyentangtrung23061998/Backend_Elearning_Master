@@ -72,34 +72,50 @@ public class CourseRestAPI {
 		return true;
 	}
 	
+//	public String getRole()
+	
 	@GetMapping("/all-courses")
 	private ResponseEntity<ResponseBean> getCourse(HttpServletRequest request){
 		String authHeader = request.getHeader("Authorization");
 		ResponseBean responseBean = new ResponseBean();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		try {
-//			List list = (List) authentication.getAuthorities();
-//			boolean check = checkRole(list);
-//			if(!check) {
-//				responseBean.setRoleFail();
-//				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
-//			}
-			
+			List list = (List) authentication.getAuthorities();
+			String role = String.valueOf(list.get(0));
+
 			List<CourseEntity> courses = courseService.getAll();
 			
 			CourseUserBean courseUserBean = new CourseUserBean();
 			List<CourseUserBean> courseUserBeanData = new ArrayList<CourseUserBean>();
 			
+			RoleNameBean strRoleAdmin = RoleNameBean.ROLE_ADMIN;
+			String roleAdmin = strRoleAdmin.getValue();
+			
 			for (CourseEntity courseEntity : courses) {
-				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
-				Iterable<RoleEntity> iterable = userEntity.getRole();
-				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
-				userBean.setRole(iterable.iterator().next().getRolename());
-				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
-				courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
-				courseBean.setLetures(courseEntity.getLectures());
-				courseUserBean = new CourseUserBean(courseBean,userBean);
-				courseUserBeanData.add(courseUserBean);
+				if(role.equals(roleAdmin)) {
+					UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
+					Iterable<RoleEntity> iterable = userEntity.getRole();
+					UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
+					userBean.setRole(iterable.iterator().next().getRolename());
+					CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+					courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
+					courseBean.setLetures(courseEntity.getLectures());
+					courseUserBean = new CourseUserBean(courseBean,userBean);
+					courseUserBeanData.add(courseUserBean);
+				}else {
+					if(courseEntity.isActive()){
+						UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
+						Iterable<RoleEntity> iterable = userEntity.getRole();
+						UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
+						userBean.setRole(iterable.iterator().next().getRolename());
+						CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+						courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
+						courseBean.setLetures(courseEntity.getLectures());
+						courseUserBean = new CourseUserBean(courseBean,userBean);
+						courseUserBeanData.add(courseUserBean);
+					}
+				}
+				
 			}
 			
 			responseBean.setData(courseUserBeanData);
@@ -245,15 +261,25 @@ public class CourseRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 	} 
 	
-	@DeleteMapping("/courses{id}")
+	@DeleteMapping("/courses/{id}")
 	private ResponseEntity<ResponseBean> deleteCourse(@PathVariable("id") Long id,HttpServletRequest request){
 		ResponseBean responseBean = new ResponseBean();
+		MapBean mapBean = new MapBean();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List list = (List) authentication.getAuthorities();
 		boolean check = checkRole(list);
 		
 		if(!check) {
 			responseBean.setRoleFail();
+			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+		}
+		
+		CourseEntity course = courseService.findById(id);
+		
+		if(course.getUsers().size()>0) {
+			int status = HttpStatus.BAD_REQUEST.value();
+			responseBean.setStatus(status);
+			responseBean.setMessages("msg.userExist", "User is enrolement");
 			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
 		}
 		

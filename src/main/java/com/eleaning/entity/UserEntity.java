@@ -57,7 +57,7 @@ public class UserEntity {
 	@JsonIgnore
 	private Set<RoleEntity> role = new HashSet<>();
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	@JsonIgnore
 	private List<CourseEntity> course;
 	

@@ -85,6 +85,7 @@ public class AuthRestAPI {
 			map.put("username", user.getUsername());
 			map.put("email", user.getEmail());
 			map.put("fullname", user.getFullname());
+			map.put("image",user.getImage());
 			map.put("token", user.getToken());
 			map.put("role",list.get(0));
 
@@ -125,7 +126,6 @@ public class AuthRestAPI {
 				signupBean.getFullname(), "", new Timestamp(System.currentTimeMillis()),
 				new Timestamp(System.currentTimeMillis()), "", "");
 
-		System.out.println("user: " + user.getUsername());
 		Set<String> strRoles = signupBean.getRole();
 		Set<RoleEntity> roles = new HashSet<RoleEntity>();
 		strRoles.forEach(role -> {

@@ -2,6 +2,7 @@ package com.eleaning.api;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -10,19 +11,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eleaning.bean.CourseBean;
+import com.eleaning.bean.CourseUserBean;
 import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
+import com.eleaning.bean.UserAboutCourseBean;
 import com.eleaning.conveter.CourseConverter;
+import com.eleaning.conveter.UserConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
@@ -46,6 +49,9 @@ public class StudentCourseEnrolementRestAPI {
 	@Autowired
 	private CourseConverter courseConverter;
 	
+	@Autowired 
+	private UserConverter userConverter;
+	
 	public boolean checkRole(List list) {
 		for (int i = 0; i < list.size(); i++) {
 			String role = String.valueOf(list.get(i));
@@ -57,12 +63,44 @@ public class StudentCourseEnrolementRestAPI {
 		return false;
 	}
 	
+	@GetMapping("/users/{userid}")
+	public ResponseEntity<ResponseBean> getEnrolement(@PathVariable Long userid){
+		ResponseBean responseBean = new ResponseBean();
+		MapBean map = new MapBean();
+		try {
+			UserEntity userEntity = userService.findUserByid(userid);
+			System.out.println("User Entity: " + userEntity.getCourse().size());
+			List<CourseEntity> courses = userEntity.getCourse();
+			List<CourseUserBean> courseUserBeans = new ArrayList<CourseUserBean>();
+			System.out.println("courses size: " + courses.size());
+			for (CourseEntity courseEntity : courses) {
+				CourseUserBean courseUserBean = new CourseUserBean();
+				CourseBean course = courseConverter.convertBean(courseEntity);
+				UserAboutCourseBean user = userConverter.convertUserAboutBean(courseEntity.getUser());
+				courseUserBean.setCourse(course);
+				courseUserBean.setTeacher(user);
+				
+				courseUserBeans.add(courseUserBean);
+				responseBean.setData(courseUserBeans);
+				responseBean.setSuccess();
+				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+		}
+		return null;
+	}
+	
 	@PostMapping("/users/{userid}/courses/{courseid}")
 	public ResponseEntity<ResponseBean> enrolementStudent(@PathVariable Long userid, @PathVariable Long courseid){
 		ResponseBean responseBean = new ResponseBean();
 		MapBean mapBean = new MapBean();
 		try {			
 			Set<CourseEntity> courses = new HashSet<CourseEntity>();
+			Set<UserEntity> users = new HashSet<UserEntity>();
+			
 			boolean flag=false;
 			UserEntity user = userService.findUserByid(userid);
 			Iterable<RoleEntity> role = user.getRole();
@@ -76,16 +114,64 @@ public class StudentCourseEnrolementRestAPI {
 				responseBean.setRoleFail();
 				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
 			}else {
+				// course nay add vao enroll
+				boolean checkCourseNotExist = true;
 				CourseEntity course = courseService.findById(courseid);
-				CourseBean courseBean = courseConverter.convertBean(course);
+				
+				courses = user.getCourser_enroll();
+				Iterator<CourseEntity> iterable = courses.iterator();
+				System.out.println("courses size: " + courses.size());
+				
+				
+				while(iterable.hasNext()) {
+					CourseEntity courseData  = iterable.next();
+					System.out.println("Course id: " + courseData.getId());
+					if(courseData.getId().equals(courseid)) {
+						checkCourseNotExist =  false;
+						courses.add(courseData);
+					}
+				}
+				
+				if(checkCourseNotExist == false) {
+					responseBean.setMessages("msg.joinExist", "User is joining course");
+					responseBean.setStatus(HttpStatus.BAD_REQUEST.value());
+					return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+				}
+				
 				courses.add(course);
+				
+				CourseBean courseBean = courseConverter.convertBean(course);
+				courseBean.setTotalStudentEnroll(course.getUsers().size());
 				user.setCourser_enroll(courses);
+				
+				System.out.println("user courser enroll: " + user.getCourser_enroll().size());
+				
 				userService.save(user);
 				
 				mapBean.put("username", user.getUsername());
 				mapBean.put("email", user.getEmail());
 				mapBean.put("fullname", user.getFullname());
 				mapBean.put("course",courseBean);
+				
+//				
+//				CourseEntity course = courseService.findById(courseid);
+//				Set<UserEntity> users = course.getUsers();
+//					
+//				
+//				
+//				CourseBean courseBean = courseConverter.convertBean(course);
+//				courseBean.setTotalStudentEnroll(course.getUsers().size());
+//				courses.add(course);
+//				user.setCourser_enroll(courses);
+//				
+//				course.setUsers(users);
+//				
+//				userService.save(user);
+//				
+//				mapBean.put("username", user.getUsername());
+//				mapBean.put("email", user.getEmail());
+//				mapBean.put("fullname", user.getFullname());
+//				mapBean.put("course",courseBean);
 				
 				responseBean.setData(mapBean);
 				responseBean.setSuccess();

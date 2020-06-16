@@ -21,6 +21,8 @@ public class LectureEntity {
 	@Size(min=3, max = 50)
 	private String name;
 	
+	private String description;
+	
 	private String image;
 	private String video;
 	private String audio;
@@ -39,11 +41,12 @@ public class LectureEntity {
 	@JsonIgnore
     private CourseEntity course;
 
-	public LectureEntity(Long id, @Size(min = 3, max = 50) String name, String image, String video, String audio,
-			String document, Timestamp createddate, Timestamp modifieddate, String createdby, String modifiedby,
-			CourseEntity course) {
+	public LectureEntity(Long id, @Size(min = 3, max = 50) String name, String description, String image, String video,
+			String audio, String document, Timestamp createddate, Timestamp modifieddate, String createdby,
+			String modifiedby, CourseEntity course) {
 		this.id = id;
 		this.name = name;
+		this.description = description;
 		this.image = image;
 		this.video = video;
 		this.audio = audio;
@@ -212,6 +215,19 @@ public class LectureEntity {
 	public void setCourse(CourseEntity course) {
 		this.course = course;
 	}
-	
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	
 }
