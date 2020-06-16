@@ -66,31 +66,43 @@ public class StudentCourseEnrolementRestAPI {
 	@GetMapping("/users/{userid}")
 	public ResponseEntity<ResponseBean> getEnrolement(@PathVariable Long userid){
 		ResponseBean responseBean = new ResponseBean();
+		List<CourseUserBean> courseUserBeans = new ArrayList<CourseUserBean>();
 		MapBean map = new MapBean();
 		try {
 			UserEntity userEntity = userService.findUserByid(userid);
-			System.out.println("User Entity: " + userEntity.getCourse().size());
-			List<CourseEntity> courses = userEntity.getCourse();
-			List<CourseUserBean> courseUserBeans = new ArrayList<CourseUserBean>();
-			System.out.println("courses size: " + courses.size());
-			for (CourseEntity courseEntity : courses) {
+			System.out.println("User Entity: " + userEntity.getCourser_enroll().size());
+			Set<CourseEntity> courses = userEntity.getCourser_enroll();
+			
+			Iterator<CourseEntity> courseData = courses.iterator();
+			while(courseData.hasNext()) {
 				CourseUserBean courseUserBean = new CourseUserBean();
-				CourseBean course = courseConverter.convertBean(courseEntity);
-				UserAboutCourseBean user = userConverter.convertUserAboutBean(courseEntity.getUser());
-				courseUserBean.setCourse(course);
-				courseUserBean.setTeacher(user);
+				CourseEntity courseEntity = courseData.next();
 				
+				UserEntity userEntityRoleTeacher = userService.findUserByid(courseEntity.getUser().getId());
+				
+				CourseBean courseBean = courseConverter.convertBean(courseEntity);
+				UserAboutCourseBean user = userConverter.convertUserAboutBean(courseEntity.getUser());
+				
+				Iterable<RoleEntity> role = userEntityRoleTeacher.getRole();
+				
+				courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
+				user.setRole(role.iterator().next().getRolename());
+				
+				courseUserBean.setCourse(courseBean);
+				courseUserBean.setTeacher(user);
 				courseUserBeans.add(courseUserBean);
-				responseBean.setData(courseUserBeans);
-				responseBean.setSuccess();
-				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+				
+				
 			}
+			
+			responseBean.setData(courseUserBeans);
+			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
 			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
 		}
-		return null;
 	}
 	
 	@PostMapping("/users/{userid}/courses/{courseid}")
