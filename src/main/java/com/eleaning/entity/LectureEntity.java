@@ -1,12 +1,14 @@
 package com.eleaning.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -40,6 +42,15 @@ public class LectureEntity {
     @JoinColumn(name = "courseid", referencedColumnName = "id")
 	@JsonIgnore
     private CourseEntity course;
+	
+//	@OneToMany(
+//    mappedBy = "course_ex")
+//@JsonIgnore
+//private List<ExamCourseEntity> examcourses;
+	
+	@OneToMany(mappedBy = "lecture")
+	@JsonIgnore
+	private List<QuestionsBankEntity> questionsBanks;
 
 	public LectureEntity(Long id, @Size(min = 3, max = 50) String name, String description, String image, String video,
 			String audio, String document, Timestamp createddate, Timestamp modifieddate, String createdby,
@@ -229,5 +240,18 @@ public class LectureEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
+	/**
+	 * @return the questionsBanks
+	 */
+	public List<QuestionsBankEntity> getQuestionsBanks() {
+		return questionsBanks;
+	}
+
+	/**
+	 * @param questionsBanks the questionsBanks to set
+	 */
+	public void setQuestionsBanks(List<QuestionsBankEntity> questionsBanks) {
+		this.questionsBanks = questionsBanks;
+	}
 }

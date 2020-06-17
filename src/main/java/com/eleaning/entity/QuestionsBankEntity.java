@@ -12,8 +12,8 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="examcourse")
-public class ExamCourseEntity {
+@Table(name="questions_bank")
+public class QuestionsBankEntity {
 	@Id
 	private Long id;
 	
@@ -37,12 +37,17 @@ public class ExamCourseEntity {
 
 	private String modifiedby;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "courseid", referencedColumnName = "id")
-	@JsonIgnore
-    private CourseEntity course_ex;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "courseid", referencedColumnName = "id")
+//	@JsonIgnore
+//    private CourseEntity course_ex;
 	
-	public ExamCourseEntity(Long id, String question, String answerfirst, String answersecond, String answerthird,
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "lectureid", referencedColumnName = "id")
+	@JsonIgnore
+	private LectureEntity lecture;
+	
+	public QuestionsBankEntity(Long id, String question, String answerfirst, String answersecond, String answerthird,
 			String answerfourth, String correctanswer, Timestamp createddate, Timestamp modifieddate, String createdby,
 			String modifiedby) {
 		this.id = id;
@@ -58,7 +63,7 @@ public class ExamCourseEntity {
 		this.modifiedby = modifiedby;
 	}
 
-	public ExamCourseEntity() {
+	public QuestionsBankEntity() {
 	}
 
 	/**
@@ -216,18 +221,16 @@ public class ExamCourseEntity {
 	}
 
 	/**
-	 * @return the course_ex
+	 * @return the lecture
 	 */
-	public CourseEntity getCourse_ex() {
-		return course_ex;
+	public LectureEntity getLecture() {
+		return lecture;
 	}
 
 	/**
-	 * @param course_ex the course_ex to set
+	 * @param lecture the lecture to set
 	 */
-	public void setCourse_ex(CourseEntity course_ex) {
-		this.course_ex = course_ex;
+	public void setLecture(LectureEntity lecture) {
+		this.lecture = lecture;
 	}
-
-	
 }

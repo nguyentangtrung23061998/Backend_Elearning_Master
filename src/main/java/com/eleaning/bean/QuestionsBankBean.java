@@ -1,6 +1,6 @@
 package com.eleaning.bean;
 
-public class ExamCourseBean {
+public class QuestionsBankBean {
 	private String question;
 
 	private String answerfirst;
@@ -12,18 +12,21 @@ public class ExamCourseBean {
 	private String answerfourth;
 
 	private String correctanswer;
+	
+	private Long lectureId;
 
-	public ExamCourseBean(String question, String answerfirst, String answersecond, String answerthird,
-			String answerfourth, String correctanswer) {
+	public QuestionsBankBean(String question, String answerfirst, String answersecond, String answerthird,
+			String answerfourth, String correctanswer, Long lectureId) {
 		this.question = question;
 		this.answerfirst = answerfirst;
 		this.answersecond = answersecond;
 		this.answerthird = answerthird;
 		this.answerfourth = answerfourth;
 		this.correctanswer = correctanswer;
+		this.lectureId = lectureId;
 	}
 
-	public ExamCourseBean() {
+	public QuestionsBankBean() {
 	}
 
 	/**
@@ -109,5 +112,18 @@ public class ExamCourseBean {
 	public void setCorrectanswer(String correctanswer) {
 		this.correctanswer = correctanswer;
 	}
-	
+
+	/**
+	 * @return the lectureId
+	 */
+	public Long getLectureId() {
+		return lectureId;
+	}
+
+	/**
+	 * @param lectureId the lectureId to set
+	 */
+	public void setLectureId(Long lectureId) {
+		this.lectureId = lectureId;
+	}
 }

@@ -52,10 +52,10 @@ public class CourseEntity {
 	@JsonIgnore
     private UserEntity user;
 	
-	@OneToMany(
-	        mappedBy = "course_ex")
-	@JsonIgnore
-	private List<ExamCourseEntity> examcourses;
+//	@OneToMany(
+//	        mappedBy = "course_ex")
+//	@JsonIgnore
+//	private List<ExamCourseEntity> examcourses;
 
 	@ManyToMany(mappedBy = "courser_enroll",fetch = FetchType.EAGER)
 	@JsonIgnore
@@ -64,7 +64,7 @@ public class CourseEntity {
 	public CourseEntity(Long id, @Size(min = 3, max = 50) String name, String description, String image,
 			boolean isActive, Timestamp createddate, Timestamp modifieddate,
 			String createdby, String modifiedby, List<LectureEntity> lectures, UserEntity user,
-			List<ExamCourseEntity> examcourses) {
+			List<QuestionsBankEntity> examcourses) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -76,7 +76,6 @@ public class CourseEntity {
 		this.modifiedby = modifiedby;
 		this.lectures = lectures;
 		this.user = user;
-		this.examcourses = examcourses;
 	}
 
 	public CourseEntity() {
@@ -226,19 +225,7 @@ public class CourseEntity {
 		this.user = user;
 	}
 
-	/**
-	 * @return the examcourses
-	 */
-	public List<ExamCourseEntity> getExamcourses() {
-		return examcourses;
-	}
 
-	/**
-	 * @param examcourses the examcourses to set
-	 */
-	public void setExamcourses(List<ExamCourseEntity> examcourses) {
-		this.examcourses = examcourses;
-	}
 
 	/**
 	 * @return the isActive
@@ -278,7 +265,7 @@ public class CourseEntity {
 		return "CourseEntity [id=" + id + ", name=" + name + ", description=" + description + ", image=" + image
 				+ ", isActive=" + isActive + ", createddate=" + createddate + ", modifieddate=" + modifieddate
 				+ ", createdby=" + createdby + ", modifiedby=" + modifiedby + ", lectures=" + lectures + ", user="
-				+ user + ", examcourses=" + examcourses + "]";
+				+ user + "]";
 	}
 
 }

@@ -21,31 +21,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eleaning.bean.ExamCourseBean;
+import com.eleaning.bean.QuestionsBankBean;
 import com.eleaning.bean.ResponseBean;
 import com.eleaning.bean.RoleNameBean;
-import com.eleaning.conveter.ExamCourseConverter;
+import com.eleaning.conveter.QuestionsBankConverter;
 import com.eleaning.entity.CourseEntity;
-import com.eleaning.entity.ExamCourseEntity;
+import com.eleaning.entity.LectureEntity;
+import com.eleaning.entity.QuestionsBankEntity;
 import com.eleaning.service.ICourseService;
-import com.eleaning.service.IExamCourseService;
+import com.eleaning.service.ILectureService;
+import com.eleaning.service.IQuestionsBankService;
 import com.eleaning.service.IUserService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/examcourses")
-public class ExamCourseRestAPI {
+@RequestMapping("/api/questions")
+public class QuestionsBankRestAPI {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExamCourseRestAPI.class);
-
-	@Autowired
-	private IExamCourseService examCourseService;
+	private static final Logger logger = LoggerFactory.getLogger(QuestionsBankRestAPI.class);
 
 	@Autowired
-	private ExamCourseConverter examCourseConverter;
+	private IQuestionsBankService questionsBankService;
+
+	@Autowired
+	private QuestionsBankConverter questionsBankConverter;
 
 	@Autowired
 	ICourseService courseService;
+	
+	@Autowired
+	ILectureService lectureService;
 
 	@Autowired
 	private IUserService userService;
@@ -62,12 +67,12 @@ public class ExamCourseRestAPI {
 	}
 
 	@GetMapping("")
-	private ResponseEntity<ResponseBean> getExamCourse(HttpServletRequest request) {
+	private ResponseEntity<ResponseBean> getQuestionBankAll() {
 		ResponseBean responseBean = new ResponseBean();
 		try {
-			List<ExamCourseEntity> examCourses = examCourseService.getAll();
-			if (examCourses != null) {
-				responseBean.setData(examCourses);
+			List<QuestionsBankEntity> questionsBanks = questionsBankService.getAll();
+			if (questionsBanks != null) {
+				responseBean.setData(questionsBanks);
 				responseBean.setSuccess();
 			}
 		} catch (Exception e) {
@@ -77,13 +82,13 @@ public class ExamCourseRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 	
-	@GetMapping("/course/{idCourse}")
-	private ResponseEntity<ResponseBean> getExamCourseId(@PathVariable Long idCourse,HttpServletRequest request) {
+	@GetMapping("/lectures/{lectureid}")
+	private ResponseEntity<ResponseBean> getQuestionsBanksId(@PathVariable Long lectureid,HttpServletRequest request) {
 		ResponseBean responseBean = new ResponseBean();
 		try {
-			List<ExamCourseEntity> examCourses = examCourseService.getByElementCourseId(idCourse);
-			if (examCourses != null) {
-				responseBean.setData(examCourses);
+			List<QuestionsBankEntity> questionsBanks = questionsBankService.getQuestionBankByLecture(lectureid);
+			if (questionsBanks != null) {
+				responseBean.setData(questionsBanks);
 				responseBean.setSuccess();
 			}
 		} catch (Exception e) {
@@ -93,10 +98,9 @@ public class ExamCourseRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
-	@PostMapping("/{idCourse}")
-	private ResponseEntity<ResponseBean> addExamCourse(@PathVariable Long idCourse,
-			@RequestBody ExamCourseBean examCourseBean, HttpServletRequest request) {
-		String authHeader = request.getHeader("Authorization");
+	@PostMapping("/lectures/{lectureid}")
+	private ResponseEntity<ResponseBean> addExamCourse(@PathVariable Long lectureid,
+			@RequestBody QuestionsBankBean questionsBank) {
 		ResponseBean responseBean = new ResponseBean();
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -107,23 +111,25 @@ public class ExamCourseRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 		try {
-			ExamCourseEntity examCourseEntity = examCourseConverter.convertEntity(examCourseBean);
-			if (examCourseBean.getQuestion() == null || examCourseBean.getAnswerfirst() == null
-					|| examCourseBean.getAnswersecond() == null || examCourseBean.getAnswerthird() == null
-					|| examCourseBean.getAnswerfourth() == null || examCourseBean.getCorrectanswer() == null) {
+			QuestionsBankEntity questionsBankEntity = questionsBankConverter.convertEntity(questionsBank);
+			if (questionsBank.getQuestion() == null || questionsBank.getAnswerfirst() == null
+					|| questionsBank.getAnswersecond() == null || questionsBank.getAnswerthird() == null
+					|| questionsBank.getAnswerfourth() == null || questionsBank.getCorrectanswer() == null) {
 				responseBean.setEnterAllRequiredFields();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
-			if (examCourseEntity != null) {
+			if (questionsBankEntity != null) {
 				
-				CourseEntity course = courseService.findById(idCourse);
-				if(course == null ) {
+				LectureEntity lecture = lectureService.findById(lectureid);
+				if(lecture == null ) {
 					responseBean.setIdObjectNotFound();
 					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 				}
-				examCourseEntity.setCourse_ex(course);
-				ExamCourseEntity examCourse = examCourseService.save(examCourseEntity);
-				responseBean.setData(examCourse);
+				questionsBankEntity.setLecture(lecture);
+				QuestionsBankEntity questionsBankEntityData= questionsBankService.save(questionsBankEntity);
+				QuestionsBankBean questionsBankBeanData = questionsBankConverter.convertBean(questionsBankEntityData);
+				questionsBankBeanData.setLectureId(questionsBankBeanData.getLectureId());
+				responseBean.setData(questionsBankBeanData);
 				responseBean.setSuccess();
 			}
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
@@ -134,10 +140,9 @@ public class ExamCourseRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 	}
 
-	@PutMapping("/{idExamCourse}/course/{idCourse}")
-	private ResponseEntity<ResponseBean> updateExamCourse(@PathVariable("idExamCourse") Long idExamCourse,
-			@PathVariable("idCourse") Long idCourse, @RequestBody ExamCourseBean examCourseBean ,
-			HttpServletRequest request) {
+	@PutMapping("/{questionBankId}")
+	private ResponseEntity<ResponseBean> updateQuestionBank(@PathVariable("questionBankId") Long questionsBankId,
+			 @RequestBody QuestionsBankBean questionsBankBean) {
 		ResponseBean responseBean = new ResponseBean();
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -149,26 +154,25 @@ public class ExamCourseRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 
-		if (examCourseBean.getQuestion() == null || examCourseBean.getAnswerfirst() == null
-				|| examCourseBean.getAnswersecond() == null || examCourseBean.getAnswerthird() == null
-				|| examCourseBean.getAnswerfourth() == null || examCourseBean.getCorrectanswer() == null) {
+		if (questionsBankBean.getQuestion() == null || questionsBankBean.getAnswerfirst() == null
+				|| questionsBankBean.getAnswersecond() == null || questionsBankBean.getAnswerthird() == null
+				|| questionsBankBean.getAnswerfourth() == null || questionsBankBean.getCorrectanswer() == null) {
 			responseBean.setEnterAllRequiredFields();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 		try {
-			ExamCourseEntity examCourseEntity = examCourseService.findById(idExamCourse);
-			if (examCourseEntity != null) {
-				examCourseEntity.setQuestion(examCourseBean.getQuestion());;
-				examCourseEntity.setAnswerfirst(examCourseBean.getAnswerfirst());
-				examCourseEntity.setAnswersecond(examCourseBean.getAnswersecond());
-				examCourseEntity.setAnswerthird(examCourseBean.getAnswerthird());
-				examCourseEntity.setAnswerfourth(examCourseBean.getAnswerfourth());
-				examCourseEntity.setCorrectanswer(examCourseBean.getCorrectanswer());
-				CourseEntity course = courseService.findById(idCourse);
-				examCourseEntity.setCourse_ex(course);
+			QuestionsBankEntity questionsBankEntity = questionsBankService.findById(questionsBankId);
+			if (questionsBankEntity != null) {
+				questionsBankEntity.setQuestion(questionsBankBean.getQuestion());;
+				questionsBankEntity.setAnswerfirst(questionsBankBean.getAnswerfirst());
+				questionsBankEntity.setAnswersecond(questionsBankBean.getAnswersecond());
+				questionsBankEntity.setAnswerthird(questionsBankBean.getAnswerthird());
+				questionsBankEntity.setAnswerfourth(questionsBankBean.getAnswerfourth());
+				questionsBankEntity.setCorrectanswer(questionsBankBean.getCorrectanswer());
 				
-				ExamCourseEntity examCourse = examCourseService.save(examCourseEntity);
-				responseBean.setData(examCourse);
+				QuestionsBankEntity questionsBankEntityData = questionsBankService.save(questionsBankEntity);
+				QuestionsBankBean questionBankData = questionsBankConverter.convertBean(questionsBankEntityData);
+				responseBean.setData(questionBankData);
 				responseBean.setSuccess();
 			}
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
@@ -180,7 +184,7 @@ public class ExamCourseRestAPI {
 	}
 	
 	@DeleteMapping("/{id}")
-	private ResponseEntity<ResponseBean> deleteExamCourse(@PathVariable("id") Long id,HttpServletRequest request){
+	private ResponseEntity<ResponseBean> deleteQuestionsBankById(@PathVariable("id") Long id){
 		ResponseBean responseBean = new ResponseBean();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List list = (List) authentication.getAuthorities();
@@ -191,7 +195,7 @@ public class ExamCourseRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
 		}
 		try {
-			boolean result = examCourseService.delete(id);
+			boolean result = questionsBankService.delete(id);
 			if(result) {
 				responseBean.setData("{}");
 				responseBean.setSuccess();

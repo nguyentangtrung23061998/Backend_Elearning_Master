@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.eleaning.entity.CourseEntity;
-import com.eleaning.entity.ExamCourseEntity;
+import com.eleaning.entity.QuestionsBankEntity;
 import com.eleaning.entity.LectureEntity;
 import com.eleaning.repository.ICourseRepository;
-import com.eleaning.repository.IExamCourseRepository;
+import com.eleaning.repository.IQuestionsBankRepository;
 import com.eleaning.repository.ILectureRepository;
 import com.eleaning.service.ICourseService;
-import com.eleaning.service.IExamCourseService;
+import com.eleaning.service.IQuestionsBankService;
 import com.eleaning.service.ILectureService;
 import com.eleaning.service.IUserService;
 
@@ -32,7 +32,7 @@ public class CourseService implements ICourseService{
 	private ILectureService lectureService;
 	
 	@Autowired
-	private IExamCourseService examCourseService;
+	private IQuestionsBankService examCourseService;
 	
 	@Autowired IUserService userService;
 	
@@ -71,13 +71,13 @@ public class CourseService implements ICourseService{
 		try {
 //			Optional<LectureEntity> optionalLecture = lectureRepository.findByCourseId(id);
 			List<LectureEntity> getLectures = lectureService.getLectureByCourse(id);
-			List<ExamCourseEntity> exCourses = examCourseService.getByElementCourseId(id);
+			List<QuestionsBankEntity> exCourses = examCourseService.getQuestionBankByLecture(id);
 		
 			for (LectureEntity lecture : getLectures) {
 				lectureService.delete(lecture.getId());
 			}
 			
-			for(ExamCourseEntity exCourse : exCourses) {
+			for(QuestionsBankEntity exCourse : exCourses) {
 				examCourseService.delete(exCourse.getId());
 			}
 			
