@@ -45,44 +45,8 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES (1589007336704,'Tense Basic','Course is perfect','english_15.png',_binary '',1590768028203,'2020-05-09 06:55:37','2020-05-30 16:43:09',NULL,NULL),(1589007354669,'Tense Advance','Course is very perfect ','english_14.jpg',_binary '',1590768028203,'2020-05-09 06:55:55','2020-05-30 16:45:58',NULL,NULL),(1589007399525,'Condition bacsic','This is difficult','english12.jpg',_binary '',1590768028203,'2020-05-09 06:56:40','2020-05-30 16:46:35',NULL,NULL),(1590859121340,'Condition Advance','This is difficult','enlisgh_10.png',_binary '',1590851786213,'2020-05-30 17:18:41','2020-05-30 17:21:10',NULL,NULL),(1590859171612,'Compare Basic','This is basic','english_5.jpg',_binary '',1590851786213,'2020-05-30 17:19:32','2020-05-30 17:22:04',NULL,NULL),(1590859181221,'Compare Advance','This is advance','59665294-learn-english-red-vector-learn-english-flat-vector-learn-english-background-learn-english.jpg',_binary '',1590851786213,'2020-05-30 17:19:41','2020-05-30 17:22:26',NULL,NULL),(1590859200771,'Enough grammar','This is basic','english_2.jpg',_binary '',1590851786213,'2020-05-30 17:20:01','2020-05-30 17:22:42',NULL,NULL),(1590859224462,'Enough grammar v2','This is nomarl','enlish7.jpg',_binary '',1590851786213,'2020-05-30 17:20:24','2020-05-31 07:53:31',NULL,NULL),(1592063113295,'English Easy','English is easy',NULL,_binary '',1590768028203,'2020-06-13 15:45:13','2020-06-13 15:53:41',NULL,NULL);
+INSERT INTO `course` VALUES (1589007399525,'Condition basic 2','Perfect','english12.jpg',_binary '',1590768028203,'2020-05-09 06:56:40','2020-06-15 06:34:40',NULL,NULL),(1590859121340,'test 3','test','enlisgh_10.png',_binary '\0',1590768028203,'2020-05-30 17:18:41','2020-06-16 10:47:06',NULL,NULL),(1590859171612,'Compare Basic','This is basic','english_5.jpg',_binary '',1590768028203,'2020-05-30 17:19:32','2020-05-30 17:22:04',NULL,NULL),(1590859181221,'Compare Advance','This is advance','59665294-learn-english-red-vector-learn-english-flat-vector-learn-english-background-learn-english.jpg',_binary '\0',1590768028203,'2020-05-30 17:19:41','2020-05-30 17:22:26',NULL,NULL),(1590859200771,'Enough grammar','This is basic','english_2.jpg',_binary '',1590768028203,'2020-05-30 17:20:01','2020-05-30 17:22:42',NULL,NULL),(1592063113295,'English Easy','English is easy',NULL,_binary '\0',1590768028203,'2020-06-13 15:45:13','2020-06-13 15:53:41',NULL,NULL),(1592235937514,'Test2','ABC2',NULL,_binary '',1590768028203,'2020-06-15 15:45:38','2020-06-16 11:07:07',NULL,NULL),(1592298474292,'test ','test',NULL,_binary '',1590768028203,'2020-06-16 09:07:54',NULL,NULL,NULL),(1592298542699,'test ','test',NULL,_binary '\0',1590768028203,'2020-06-16 09:09:03',NULL,NULL,NULL),(1592298922740,'test ','test',NULL,_binary '\0',1590768028203,'2020-06-16 09:15:23',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `examcourse`
---
-
-DROP TABLE IF EXISTS `examcourse`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `examcourse` (
-  `id` bigint(20) NOT NULL,
-  `question` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `answerfirst` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `answersecond` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `answerthird` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `answerfourth` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `correctanswer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `createddate` timestamp NULL DEFAULT NULL,
-  `modifieddate` timestamp NULL DEFAULT NULL,
-  `createdby` varchar(100) DEFAULT NULL,
-  `modifiedby` varchar(100) DEFAULT NULL,
-  `courseid` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `exam_course_fk` (`courseid`),
-  CONSTRAINT `exam_course_fk` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `examcourse`
---
-
-LOCK TABLES `examcourse` WRITE;
-/*!40000 ALTER TABLE `examcourse` DISABLE KEYS */;
-INSERT INTO `examcourse` VALUES (1589008233706,'How do you think your course? ','Answer 1','Answer 2','Answer 3','Answer 4','Answer 2','2020-05-09 07:10:34','2020-05-09 07:16:51',NULL,NULL,1589007336704),(1589009379952,'Question 3','Answer 2','Answer 3','Answer 31','Answer 24','Answer 2','2020-05-09 07:29:40',NULL,NULL,NULL,1589007336704),(1589009872239,'Question 4','Answer 2','Answer 3','Answer 31','Answer 24','Answer 2','2020-05-09 07:37:52',NULL,NULL,NULL,1589007336704),(1589009912708,'Question 5','Answer 2','Answer 3','Answer 31','Answer 24','Answer 2','2020-05-09 07:38:33',NULL,NULL,NULL,1589007336704),(1589009983701,'Question 3','Answer 2','Answer 3','Answer 31','Answer 24','Answer 2','2020-05-09 07:39:44',NULL,NULL,NULL,1589007354669),(1589010418388,'Question 4','Answer 2','Answer 3','Answer 31','Answer 24','Answer 2','2020-05-09 07:46:58',NULL,NULL,NULL,1589007354669);
-/*!40000 ALTER TABLE `examcourse` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -248,6 +212,7 @@ DROP TABLE IF EXISTS `lecture`;
 CREATE TABLE `lecture` (
   `id` bigint(20) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `video` varchar(255) DEFAULT NULL,
   `audio` varchar(255) DEFAULT NULL,
@@ -269,8 +234,44 @@ CREATE TABLE `lecture` (
 
 LOCK TABLES `lecture` WRITE;
 /*!40000 ALTER TABLE `lecture` DISABLE KEYS */;
-INSERT INTO `lecture` VALUES (1589007336704,'English advance','simple-present.jpg','bai1.mp4',NULL,NULL,1589007336704,NULL,'2020-06-13 16:07:24',NULL,NULL),(1589007336705,'Present Advance',NULL,'present_bai2.mp4',NULL,NULL,1589007336704,NULL,'2020-05-28 11:14:46',NULL,NULL),(1589007336706,'Past Basic',NULL,'Present Tense - Learn English grammar through conversations.mp4',NULL,NULL,1589007336704,NULL,'2020-05-29 15:21:44',NULL,NULL),(1589007336707,'Past Advance',NULL,'past_advance.mp4',NULL,NULL,1589007354669,NULL,'2020-05-29 16:05:27',NULL,NULL),(1589007336708,'Fureture Basic',NULL,'Grammar Andy- Future Simple.mp4',NULL,NULL,1589007354669,NULL,'2020-05-29 16:10:38',NULL,NULL),(1589007336709,'Fureture Advance',NULL,'Grammar Andy- Future Simple.mp4',NULL,NULL,1589007336704,NULL,'2020-05-29 16:13:04',NULL,NULL),(1592068099890,'English advance v2',NULL,NULL,NULL,NULL,1592063113295,'2020-06-13 17:08:20',NULL,NULL,NULL);
+INSERT INTO `lecture` VALUES (1592068099890,'English advance v2','Good',NULL,NULL,NULL,NULL,1592063113295,'2020-06-13 17:08:20',NULL,NULL,NULL),(1592374487015,'Lecture 01','Good',NULL,NULL,NULL,NULL,1590859200771,'2020-06-17 06:14:47',NULL,NULL,NULL),(1592374544737,'Lecture 02','Perfect',NULL,NULL,NULL,NULL,1590859200771,'2020-06-17 06:15:45',NULL,NULL,NULL),(1592374551443,'Lecture 03','Perfect',NULL,NULL,NULL,NULL,1590859200771,'2020-06-17 06:15:51',NULL,NULL,NULL),(1592374555865,'Lecture 04','Perfect',NULL,NULL,NULL,NULL,1590859200771,'2020-06-17 06:15:56',NULL,NULL,NULL),(1592374611603,'Lecture 05','Perfect',NULL,NULL,NULL,NULL,1592063113295,'2020-06-17 06:16:52',NULL,NULL,NULL),(1592374617353,'Lecture 06','Perfect',NULL,NULL,NULL,NULL,1592063113295,'2020-06-17 06:16:57',NULL,NULL,NULL),(1592374624279,'Lecture 01','Perfect',NULL,NULL,NULL,NULL,1592235937514,'2020-06-17 06:17:04',NULL,NULL,NULL),(1592374628243,'Lecture 02','Perfect',NULL,NULL,NULL,NULL,1592235937514,'2020-06-17 06:17:08',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `lecture` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `questions_bank`
+--
+
+DROP TABLE IF EXISTS `questions_bank`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `questions_bank` (
+  `id` bigint(20) NOT NULL,
+  `question` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `answerfirst` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `answersecond` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `answerthird` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `answerfourth` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `correctanswer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `createddate` timestamp NULL DEFAULT NULL,
+  `modifieddate` timestamp NULL DEFAULT NULL,
+  `createdby` varchar(100) DEFAULT NULL,
+  `modifiedby` varchar(100) DEFAULT NULL,
+  `lectureid` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `exam_course_fk` (`lectureid`),
+  CONSTRAINT `questions_bank_lecture_fk` FOREIGN KEY (`lectureid`) REFERENCES `lecture` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `questions_bank`
+--
+
+LOCK TABLES `questions_bank` WRITE;
+/*!40000 ALTER TABLE `questions_bank` DISABLE KEYS */;
+INSERT INTO `questions_bank` VALUES (1592375448430,'Question 23','Answer one','Answer two','Answer three','Answer four','A','2020-06-17 06:30:48','2020-06-17 06:53:47',NULL,NULL,1592068099890);
+/*!40000 ALTER TABLE `questions_bank` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -310,14 +311,9 @@ DROP TABLE IF EXISTS `student_course_enrolement`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `student_course_enrolement` (
-  `id` bigint(20) NOT NULL,
   `userid` bigint(20) NOT NULL,
   `courseid` bigint(20) NOT NULL,
-  `createddate` timestamp NULL DEFAULT NULL,
-  `modifieddate` timestamp NULL DEFAULT NULL,
-  `createdby` varchar(100) DEFAULT NULL,
-  `modifiedby` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`userid`,`courseid`),
   KEY `userid` (`userid`),
   KEY `courseid` (`courseid`),
   CONSTRAINT `student_course_enrolement_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
@@ -331,6 +327,7 @@ CREATE TABLE `student_course_enrolement` (
 
 LOCK TABLES `student_course_enrolement` WRITE;
 /*!40000 ALTER TABLE `student_course_enrolement` DISABLE KEYS */;
+INSERT INTO `student_course_enrolement` VALUES (1592300722946,1589007399525),(1592300739996,1590859121340),(1592300773706,1590859121340),(1592300773706,1592235937514),(1592300773706,1592298474292);
 /*!40000 ALTER TABLE `student_course_enrolement` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -365,7 +362,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1590768028203,'admin','$2a$10$ca1BxF6YDDGz.DJ21jOPCO7T2yfe1IVpazM3gpbqCJzcNYCobuwoq','admin@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTU5MjEyNDE5NiwiZXhwIjoxNTkyMTQyMTk2fQ.R1sJ0qaN1IJnehEBbJuDQVSJFlbD2XJ8BtpFsEpKwI3fUJm66En6Rq1v5b1rV6olTUlJReZ1WvB0DRuWftnauA','Nguyen Trung','2020-05-29 16:00:28','2020-06-14 08:43:16','',''),(1590851786213,'trungdeptrai','$2a$10$/8thMisvIBarc5bU0q6DsemxXt1qkTOQoYQ1KHb2dYUfM8cR39gMe','ntt@gmail.com','https://firebasestorage.googleapis.com/v0/b/app-elearning-english.appspot.com/o/images%2F25de2ea8-47cb-478e-8260-caafd744f863.jpg?alt=media&token=17b75654-4431-48e0-ba72-04de994ea113','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0cnVuZ2RlcHRyYWkiLCJpYXQiOjE1OTIxMjQxNjYsImV4cCI6MTU5MjE0MjE2Nn0.mbeqid31TWb-PidRfezZkrS_JjPv2B8L3MZx5y8GRJvDnHPkGlWUuITiVmDx64gGqvUZ5e6ruT2-2u_E_z772Q','Nguyen Tang Trung','2020-05-30 15:16:26','2020-06-14 08:42:46','','');
+INSERT INTO `user` VALUES (1590768028203,'admin','$2a$10$ca1BxF6YDDGz.DJ21jOPCO7T2yfe1IVpazM3gpbqCJzcNYCobuwoq','admin@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTU5MjM3NjgxMywiZXhwIjoxNTkyMzc4NjEzfQ.WP35oieiXYTUQh2H9drft2BukVZwVBNx3xeWIty2Ue0y1bGc_HOpefHlE1UMjMsvdPWgUTSZRZrhmzv-yRF0kQ','Nguyen Trung','2020-05-29 16:00:28','2020-06-17 06:53:33','',''),(1592300630498,'nguyentangtrung2306','$2a$10$A9ylqCisw3TMS17m9FqmRuyTch5ZJk.NpGa.UrY839f/yT0l7RaIG','nguyentangtrung11@gmail.com','','','Nguyen Tang Trung','2020-06-16 09:43:51','2020-06-16 09:43:51','',''),(1592300656405,'thanhtu','$2a$10$Iz9SFOCLaYoZ63IdmKBkPeqYwRMbWq4UHjdE6H0oJz6inRcLjjqcK','thanhtu@gmail.com','','','Thanh Tú','2020-06-16 09:44:17','2020-06-16 09:44:17','',''),(1592300685696,'quangviet','$2a$10$2a8rgiVyP/K.l00nhpUNHOqw.WIqZgVm8CLdTjtbWzaRipAXyExwa','quangviet@gmail.com','','','Qaung Viet','2020-06-16 09:44:46','2020-06-16 09:44:46','',''),(1592300722946,'trungdeptrai','$2a$10$D1YVepXmtLAAPf8axpDbkOYr/JRZ2Mv6HfJtbXPJJZrSKqTLZErgi','trungdeptrai@gmail.com','','','Qaung Viet','2020-06-16 09:45:23','2020-06-16 10:09:56','',''),(1592300739996,'thanhto','$2a$10$tYKc7CoGfiDb8uCAjTOn9uUmBGklJrOxyEkFMG20WomnjCtIXru6W','thanhto@gmail.com','','','Thanh Tố','2020-06-16 09:45:40','2020-06-16 10:47:42','',''),(1592300773706,'phuongdung','$2a$10$mJWzhVEFRq8ixxUAFUZAc.JwYGfVx5.SEqAkT.3Z/4ZLEa7FH3pvC','duongphuongdung@gmail.com','','Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwaHVvbmdkdW5nIiwiaWF0IjoxNTkyMzE4NDYxLCJleHAiOjE1OTIzMzY0NjF9.LbH4wVyWIFDAJ6uzlujMSSDNWEkAHu7jCWm8KlzDBMlxvK9N2l-ch47IDOnU1dJivsqSVOJnrCse4sZvnGPEtg','Duong Phuong Duong','2020-06-16 09:46:14','2020-06-16 14:41:01','','');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -392,7 +389,7 @@ CREATE TABLE `user_role` (
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
-INSERT INTO `user_role` VALUES (1590768028203,1),(1590851786213,2);
+INSERT INTO `user_role` VALUES (1590768028203,1),(1592300722946,2),(1592300739996,2),(1592300773706,2),(1592300630498,3),(1592300656405,3),(1592300685696,3);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -409,4 +406,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-14 16:53:37
+-- Dump completed on 2020-06-17 13:55:48
