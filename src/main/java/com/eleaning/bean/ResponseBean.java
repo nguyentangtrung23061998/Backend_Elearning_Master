@@ -143,7 +143,7 @@ public class ResponseBean {
 	}
 
 	public void setIsExisting() {
-		this.setMessages("msg.isExisting", "It is existing");
+		this.setMessages("msg.isExisting", "Username is existing");
 		this.setStatus(HttpStatus.FOUND.value());
 	}
 
