@@ -240,6 +240,7 @@ public class CourseRestAPI {
 		if(courseEntity!= null) {
 			courseEntity.setName(courseBean.getName());
 			courseEntity.setDescription(courseBean.getDescription());
+			courseEntity.setActive(courseBean.isActive());
 			CourseEntity course = courseService.save(courseEntity);
 			
 			UserEntity userEntityRoleTeacher = userService.findUserByid(courseEntity.getUser().getId());
@@ -277,6 +278,7 @@ public class CourseRestAPI {
 		CourseEntity course = courseService.findById(id);
 		
 		if(course.getUsers().size()>0) {
+			System.out.println("aaaaaaaaaaa");
 			int status = HttpStatus.BAD_REQUEST.value();
 			responseBean.setStatus(status);
 			responseBean.setMessages("msg.userExist", "User is enrolement");

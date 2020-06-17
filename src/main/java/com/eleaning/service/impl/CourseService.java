@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.tools.OptionChecker;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class CourseService implements ICourseService{
 	@Override
 	public boolean delete(Long id) {
 		try {
-//			Optional<LectureEntity> optionalLecture = lectureRepository.findByCourseId(id);
+			System.out.println("id: " + id);
 			List<LectureEntity> getLectures = lectureService.getLectureByCourse(id);
 			List<QuestionsBankEntity> exCourses = examCourseService.getQuestionBankByLecture(id);
 		
@@ -80,9 +81,7 @@ public class CourseService implements ICourseService{
 			for(QuestionsBankEntity exCourse : exCourses) {
 				examCourseService.delete(exCourse.getId());
 			}
-			
-			
-			courseRepository.deleteById(id);
+			courseRepository.deleteCourseById(id);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
