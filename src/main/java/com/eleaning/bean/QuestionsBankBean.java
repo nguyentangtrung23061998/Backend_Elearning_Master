@@ -1,6 +1,9 @@
 package com.eleaning.bean;
 
 public class QuestionsBankBean {
+	
+	private Long id;
+	
 	private String question;
 
 	private String answerfirst;
@@ -15,8 +18,10 @@ public class QuestionsBankBean {
 	
 	private Long lectureId;
 
-	public QuestionsBankBean(String question, String answerfirst, String answersecond, String answerthird,
+
+	public QuestionsBankBean(Long id, String question, String answerfirst, String answersecond, String answerthird,
 			String answerfourth, String correctanswer, Long lectureId) {
+		this.id = id;
 		this.question = question;
 		this.answerfirst = answerfirst;
 		this.answersecond = answersecond;
@@ -25,6 +30,25 @@ public class QuestionsBankBean {
 		this.correctanswer = correctanswer;
 		this.lectureId = lectureId;
 	}
+	
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
 
 	public QuestionsBankBean() {
 	}

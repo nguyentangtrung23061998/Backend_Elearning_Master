@@ -82,6 +82,23 @@ public class QuestionsBankRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 	
+	@GetMapping("/{id}")
+	private ResponseEntity<ResponseBean> getQuestionById(@PathVariable Long id) {
+		ResponseBean responseBean = new ResponseBean();
+		try {
+//			List<QuestionsBankEntity> questionsBanks = questionsBankService.getAll();
+			QuestionsBankEntity questionsBankEntity = questionsBankService.findById(id);
+			if (questionsBankEntity != null) {
+				responseBean.setData(questionsBankEntity);
+				responseBean.setSuccess();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+	}
+	
 	@GetMapping("/lectures/{lectureid}")
 	private ResponseEntity<ResponseBean> getQuestionsBanksId(@PathVariable Long lectureid,HttpServletRequest request) {
 		ResponseBean responseBean = new ResponseBean();
