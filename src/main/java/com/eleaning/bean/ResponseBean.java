@@ -193,6 +193,16 @@ public class ResponseBean {
 		this.setStatus(HttpStatus.BAD_REQUEST.value());
 		
 	}
+	
+	public void setPasswordSame() {
+		this.setMessages("msg.passwordInvalid","The password isn't the same");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+	}
+
+	public void setPasswordFail() {
+		this.setMessages("msg.passwordInvalid","The password is invalid");
+		this.setStatus(HttpStatus.BAD_REQUEST.value());
+	}
 
 //	public void setTokenTimeout() {
 //		this.setMessages("msg.timeOut", "Time out");

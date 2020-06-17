@@ -1,6 +1,7 @@
 package com.eleaning.api;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eleaning.bean.ChangePassword;
 import com.eleaning.bean.CourseBean;
 import com.eleaning.bean.CourseUserBean;
 import com.eleaning.bean.MapBean;
@@ -50,6 +56,12 @@ import com.eleaning.util.Util;
 public class UserRestAPI {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRestAPI.class);
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
 	private IUserService userService;
@@ -158,25 +170,6 @@ public class UserRestAPI {
 		}
 	}
 	
-//	@PostMapping("")
-//	private ResponseEntity<ResponseBean> addUser() {
-//		ResponseBean responseBean = new ResponseBean();
-//		try {
-//			Long id = 1588172402901L;
-//			UserEntity user = userService.findUserByid(id);
-//			if(user != null) {
-//				responseBean.setData(user);
-//				responseBean.setSuccess();
-//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-//			}else {
-//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-//			}
-//		} catch (Exception e) {
-//			logger.error(e.getMessage());
-//			e.printStackTrace();
-//		}
-//		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-//	}
 	
 	@PostMapping("/uploads/{id}")
 	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file)
@@ -205,7 +198,42 @@ public class UserRestAPI {
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
-	@PutMapping("/{id}")
+//	@PutMapping("/{id}")
+//	private ResponseEntity<ResponseBean> updateUser(@PathVariable long id, @RequestBody UserBean userBean) {
+//		ResponseBean responseBean = new ResponseBean();
+//		try {
+//			Set<RoleEntity> roles = new HashSet<RoleEntity>();
+//			UserEntity user = userService.findUserByid(id);
+//			RoleEntity role = roleService.findByRolename(userBean.getRole());
+//			if (role == null) {
+//				responseBean.setRoleUserNotFound();
+//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//			}
+//
+//			user.setUsername(userBean.getUsername());
+//			user.setPassword(passwordEncoder.encode(userBean.getPassword()));
+//			user.setEmail(userBean.getEmail());
+//			user.setFullname(userBean.getFullname());
+//			user.setImage(userBean.getImage());
+//
+//			roles.add(role);
+//			user.setRole(roles);
+//			UserEntity userEntity = userService.save(user);
+//			UserBean userOutput = userConverter.convertBean(userEntity);
+//			userOutput.setImage(user.getImage());
+//			userOutput.setRole(userBean.getRole());
+//				
+//			responseBean.setData(userOutput);
+//			responseBean.setSuccess();
+//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+	
+	@PutMapping("/update_profile/{id}")
 	private ResponseEntity<ResponseBean> updateUser(@PathVariable long id, @RequestBody UserBean userBean) {
 		ResponseBean responseBean = new ResponseBean();
 		try {
@@ -217,11 +245,8 @@ public class UserRestAPI {
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
 
-			user.setUsername(userBean.getUsername());
-			user.setPassword(passwordEncoder.encode(userBean.getPassword()));
 			user.setEmail(userBean.getEmail());
 			user.setFullname(userBean.getFullname());
-			user.setImage(userBean.getImage());
 
 			roles.add(role);
 			user.setRole(roles);
@@ -238,6 +263,37 @@ public class UserRestAPI {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@PutMapping("/change_password/{id}")
+	private ResponseEntity<ResponseBean> updateUserPassword(@PathVariable long id, @RequestBody ChangePassword changePassword,Principal principal){
+		ResponseBean responseBean = new ResponseBean();
+		try {
+			UserEntity user = userService.findUserByid(id);
+
+		//	authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, changePassword.getCurrentPassword()));
+			
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(user.getUsername(), changePassword.getCurrentPassword()));
+			
+			if(changePassword.getNewPassword().equals(changePassword.getCurrentPassword())) {
+				responseBean.setPasswordSame();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+			
+			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
+			
+			UserEntity userEntity = userService.save(user);
+			UserBean userOutput = userConverter.convertBean(userEntity);
+			
+			responseBean.setData(userOutput);
+			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		} catch (AuthenticationException e) {
+			logger.error(e.getMessage());
+			responseBean.setPasswordFail();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@DeleteMapping("/{id}")

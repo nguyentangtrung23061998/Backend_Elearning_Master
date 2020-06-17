@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,10 +106,10 @@ public class AuthRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 
-		if (userService.existsByEmail(signupBean.getEmail())) {
-			responseBean.setEmailIsExisting();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-		}
+//		if (userService.existsByEmail(signupBean.getEmail())) {
+//			responseBean.setEmailIsExisting();
+//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//		}
 		if (signupBean.getUsername() == null || signupBean.getPassword() == null || signupBean.getRole().size() < 0
 				|| signupBean.getFullname() == null || signupBean.getEmail() == null) {
 			responseBean.setEnterAllRequiredFields();

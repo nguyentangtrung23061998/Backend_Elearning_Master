@@ -2,7 +2,7 @@ package com.eleaning.bean;
 
 public class UserBean {
 	private Long id;
-	private String username;
+	private String username;//check trùng
 	private String password;
 	private String email;
 	private String image;
