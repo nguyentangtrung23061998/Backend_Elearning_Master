@@ -106,10 +106,10 @@ public class AuthRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 
-//		if (userService.existsByEmail(signupBean.getEmail())) {
-//			responseBean.setEmailIsExisting();
-//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-//		}
+		if (userService.existsByEmail(signupBean.getEmail())) {
+			responseBean.setEmailIsExisting();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+		}
 		if (signupBean.getUsername() == null || signupBean.getPassword() == null || signupBean.getRole().size() < 0
 				|| signupBean.getFullname() == null || signupBean.getEmail() == null) {
 			responseBean.setEnterAllRequiredFields();

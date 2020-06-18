@@ -9,15 +9,22 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.eleaning.api.QuestionsBankRestAPI;
 import com.eleaning.entity.LectureEntity;
+import com.eleaning.entity.QuestionsBankEntity;
 import com.eleaning.repository.ILectureRepository;
+import com.eleaning.repository.IQuestionsBankRepository;
 import com.eleaning.service.ILectureService;
+import com.eleaning.service.IQuestionsBankService;
 
 @Service	 	
 public class LectureService implements ILectureService{
 
 	@Autowired
 	private ILectureRepository lectureRepository;
+	
+	@Autowired
+	private IQuestionsBankService questionsBankService;
 	
 	@Override
 	public List<LectureEntity> getAll() {
@@ -65,6 +72,10 @@ public class LectureService implements ILectureService{
 	@Override
 	public boolean delete(Long id) {
 		try {
+			List<QuestionsBankEntity> questionsBankEntities = questionsBankService.getQuestionBankByLecture(id);
+			for(QuestionsBankEntity questionsBankEntity : questionsBankEntities) {
+				questionsBankService.delete(questionsBankEntity.getId());
+			}
 			lectureRepository.deleteById(id);
 			return true;
 		} catch (Exception e) {

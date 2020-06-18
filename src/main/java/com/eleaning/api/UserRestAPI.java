@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -93,37 +94,27 @@ public class UserRestAPI {
 	}
 	
 	@GetMapping("")
-	private ResponseEntity<ResponseBean> getUser() {
+	private ResponseEntity<ResponseBean> getUsers() {
 		ResponseBean responseBean = new ResponseBean();
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserBean userBean = new UserBean();
 		try {
-			List list = (List) authentication.getAuthorities();
-			boolean check = checkRole(list);
-			if(!check) {
-				responseBean.setRoleFail();
-				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
-			}
-			
 			List<UserEntity> users = userService.getUsers();
-			
-			MapBean map = new MapBean();
-			List listUsers = new ArrayList();
-			for (int i = 0; i < users.size(); i++) {
-				UserEntity user = new UserEntity();
-				map = new MapBean();
-				user = users.get(i);
-				map.put("role", user.getRole());
-				listUsers.add(map.getAll());
+			List<UserBean> listUser = new ArrayList<UserBean>();
+			for(UserEntity user : users) {
+				userBean = userConverter.convertBean(user);
+				Set<RoleEntity> userData = user.getRole();
+				Iterator<RoleEntity> role = userData.iterator();
+				userBean.setRole(role.next().getRolename());
+				listUser.add(userBean);
 			}
-			//xử lý qua bean -> để đưa role 
-			responseBean.setData(listUsers);
+			responseBean.setData(listUser);
 			responseBean.setSuccess();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-		} catch (Exception e) {
+		}catch (Exception e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-		return null;
 	}
 
 	@GetMapping("/{id}")
@@ -240,10 +231,10 @@ public class UserRestAPI {
 			Set<RoleEntity> roles = new HashSet<RoleEntity>();
 			UserEntity user = userService.findUserByid(id);
 			RoleEntity role = roleService.findByRolename(userBean.getRole());
-			if (role == null) {
-				responseBean.setRoleUserNotFound();
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-			}
+//			if (role == null) {
+//				responseBean.setRoleUserNotFound();
+//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+//			}
 
 			user.setEmail(userBean.getEmail());
 			user.setFullname(userBean.getFullname());

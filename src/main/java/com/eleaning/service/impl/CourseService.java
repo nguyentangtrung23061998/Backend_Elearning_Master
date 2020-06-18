@@ -35,7 +35,8 @@ public class CourseService implements ICourseService{
 	@Autowired
 	private IQuestionsBankService examCourseService;
 	
-	@Autowired IUserService userService;
+	@Autowired 
+	private IUserService userService;
 	
 	@Override
 	public CourseEntity save(CourseEntity course) {
@@ -76,6 +77,7 @@ public class CourseService implements ICourseService{
 		
 			for (LectureEntity lecture : getLectures) {
 				lectureService.delete(lecture.getId());
+//				lectureService.delete()
 			}
 			
 			for(QuestionsBankEntity exCourse : exCourses) {
