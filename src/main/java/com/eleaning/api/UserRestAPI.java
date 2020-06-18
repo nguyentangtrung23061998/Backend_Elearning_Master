@@ -150,6 +150,7 @@ public class UserRestAPI {
 				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
 				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
 				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+				courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
 				courseUserBean = new CourseUserBean(courseBean,userBean);
 				courseUserBeanData.add(courseUserBean);
 			}
