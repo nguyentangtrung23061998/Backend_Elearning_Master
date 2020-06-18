@@ -189,6 +189,7 @@ public class LectureRestAPI {
 		LectureEntity lectureEntity = lectureService.findById(id);
 		if (lectureEntity != null) {
 			lectureEntity.setName(lectureBean.getName());
+			lectureEntity.setDescription(lectureBean.getDescription());
 			LectureEntity lecture = lectureService.save(lectureEntity);
 			responseBean.setData(lecture);
 			responseBean.setSuccess();
@@ -220,13 +221,13 @@ public class LectureRestAPI {
 	}
 
 	@PostMapping("/upload/{id}")
-	private ResponseEntity<ResponseBean> uploadUser(@PathVariable long id, @RequestParam("file") MultipartFile file)
+	private ResponseEntity<ResponseBean> uploadUser(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
 			throws IOException {
 		LectureEntity lecture = lectureService.findById(id);
 		ResponseBean responseBean = new ResponseBean();
 
 		if (lecture != null) {
-			boolean checkUpload = Util.upload(file);
+			boolean checkUpload = Util.upload(file,request);
 			if (checkUpload) {
 				String orginalFile = file.getOriginalFilename();
 				String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);

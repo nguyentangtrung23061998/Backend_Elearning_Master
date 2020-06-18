@@ -1,6 +1,8 @@
 package com.eleaning.api;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,13 +200,19 @@ public class CourseRestAPI {
 	} 
 	
 	@PostMapping("/courses/upload/{id}")
-	private ResponseEntity<ResponseBean> uploadCourse(@PathVariable long id, @RequestParam("file") MultipartFile file)
+	private ResponseEntity<ResponseBean> uploadCourse(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
 			throws IOException {
+		
+
+//		File file2 = new File("/static/upload");
+//        URL keyFileURL = this.getClass().getClassLoader().getResource(file2);
+        
+		System.out.println( getClass().getResource(getClass().getSimpleName() + ".class") );
+        
 		CourseEntity course = courseService.findById(id);
 		ResponseBean responseBean = new ResponseBean();
-
 		if (course != null) {
-			boolean checkUpload = Util.upload(file);
+			boolean checkUpload = Util.upload(file,request);
 			if (checkUpload) {
 				String orginalFile = file.getOriginalFilename();
 				String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);

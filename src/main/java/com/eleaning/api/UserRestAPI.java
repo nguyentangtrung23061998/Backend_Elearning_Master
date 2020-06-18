@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,13 +165,13 @@ public class UserRestAPI {
 	
 	
 	@PostMapping("/uploads/{id}")
-	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file)
+	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
 			throws IOException {
 		UserEntity user = userService.findUserByid(id);
 		ResponseBean responseBean = new ResponseBean();
 		try {
 			if (user != null) {
-				boolean checkUpload = Util.upload(file);
+				boolean checkUpload = Util.upload(file,request);
 				if (checkUpload) {
 					user.setImage(file.getOriginalFilename());
 					userService.save(user);

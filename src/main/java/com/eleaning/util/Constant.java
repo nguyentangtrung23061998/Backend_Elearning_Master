@@ -43,8 +43,8 @@ public class Constant {
 	public static final String TIME_SLOT_TYPE_CLOSEDTIME 	= "CLOSEDTIME";
 	public static final String TIME_SLOT_TYPE_UNBOOKABLE 	= "UNBOOKABLE";
 	
-	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\images";
-	public static final String UPLOAD_VIDEO = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\video";
-	public static final String UPLOAD_AUDIO = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\audio";
-	public static final String UPLOAD_DOCUMENT = "G:\\HKII-Nam4\\PTPMHDV\\web-server-elearning\\src\\main\\resources\\static\\upload\\document";
+	public static final String UPLOAD_IMG = "\\upload\\images";
+	public static final String UPLOAD_VIDEO = "\\upload\\video";
+	public static final String UPLOAD_AUDIO = "\\upload\\audio";
+	public static final String UPLOAD_DOCUMENT = "\\upload\\document";
 }
