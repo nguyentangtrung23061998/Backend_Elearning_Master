@@ -169,7 +169,7 @@ public class UserRestAPI {
 	}
 	
 	
-	@PostMapping("/uploads/{id}")
+	@PostMapping("/upload/{id}")
 	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
 			throws IOException {
 		UserEntity user = userService.findUserByid(id);
