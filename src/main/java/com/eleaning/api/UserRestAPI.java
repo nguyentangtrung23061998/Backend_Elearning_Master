@@ -87,10 +87,14 @@ public class UserRestAPI {
 	public boolean checkRole(List list) {
 		for (int i = 0; i < list.size(); i++) {
 			String role = String.valueOf(list.get(i));
-			RoleNameBean strRole = RoleNameBean.ROLE_STUDENT;
-			String roleStudent = strRole.getValue();
-			if(role.equals(roleStudent))
+			RoleNameBean strRoleStudent = RoleNameBean.ROLE_STUDENT;
+			RoleNameBean strRoleTeacher = RoleNameBean.ROLE_TEACHER;
+			String roleStudent = strRoleStudent.getValue();
+			String roleTeacher = strRoleTeacher.getValue();
+			System.out.println("role: " + role);
+			if(role.equals(roleStudent) || role.equals(roleTeacher)){
 				return false;
+			}
 		}
 		return true;
 	}
@@ -234,29 +238,62 @@ public class UserRestAPI {
 			Set<RoleEntity> roles = new HashSet<RoleEntity>();
 			UserEntity user = userService.findUserByid(id);
 			RoleEntity role = roleService.findByRolename(userBean.getRole());
-//			if (role == null) {
-//				responseBean.setRoleUserNotFound();
-//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			System.out.println("ROle: " + role.getRolename());
+			System.out.println("user bean role: " + userBean.getRole());
+			
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			List list = (List) authentication.getAuthorities();
+			
+			String roleSystem = String.valueOf(list.get(0));
+			boolean check = checkRole(list);
+//			if(!check) {
+//				responseBean.setRoleFail();
+//				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
 //			}
-
+			
+			
 			user.setEmail(userBean.getEmail());
 			user.setFullname(userBean.getFullname());
-
-			roles.add(role);
-			user.setRole(roles);
-			UserEntity userEntity = userService.save(user);
-			UserBean userOutput = userConverter.convertBean(userEntity);
-			userOutput.setImage(user.getImage());
-			userOutput.setRole(userBean.getRole());
+			if(check) {
 				
-			responseBean.setData(userOutput);
-			responseBean.setSuccess();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+				roles.add(role);
+				user.setRole(roles);
+				
+				UserEntity userEntity = userService.save(user);
+				UserBean userOutput = userConverter.convertBean(userEntity);
+				userOutput.setImage(user.getImage());
+				userOutput.setRole(userBean.getRole());
+					
+				responseBean.setData(userOutput);
+				responseBean.setSuccess();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			}else {
+				if(!userBean.getRole().equals(roleSystem)) {
+					MapBean map = new MapBean();
+					map.put("You are not admin", "user don't update role's user");
+					responseBean.setData(map.getAll());
+					responseBean.setBadRequest();
+					
+					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+				}else {
+					roles.add(role);
+					user.setRole(roles);
+					UserEntity userEntity = userService.save(user);
+					UserBean userOutput = userConverter.convertBean(userEntity);
+					userOutput.setImage(user.getImage());
+					userOutput.setRole(userBean.getRole());
+					
+					responseBean.setData(userOutput);
+					responseBean.setSuccess();
+					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+				}
+			}
+	
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-		return null;
 	}
 	
 	@PutMapping("/change_password/{id}")

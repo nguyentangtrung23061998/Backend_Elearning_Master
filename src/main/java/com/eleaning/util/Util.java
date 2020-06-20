@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Random;
@@ -318,12 +320,17 @@ public class Util {
 
 	public static boolean upload(MultipartFile file, HttpServletRequest request) throws IOException {
 		URL url = Util.class
-                .getClassLoader().getResource("static");
+                .getClassLoader().getResource("");
+		String rootPath = String.valueOf(url) + "static";
 		
-
+		File f = new File(rootPath);
+		if (!f.exists()) {
+			f.mkdir();
+		}
+		
 		String orginalFile = file.getOriginalFilename();
 		String extension = orginalFile.substring(orginalFile.lastIndexOf(".") + 1);
-		String rootPath = String.valueOf(url);
+		
 		String uploadRootPath = "";
 		System.out.println("root path: " + rootPath);
 		
@@ -334,7 +341,7 @@ public class Util {
 		}
 		for (String extensionImg : Constant.extensionImg) {
 			if (extension.equals(extensionImg)) {
-				uploadRootPath = rootPath +"\\"+ Constant.UPLOAD_IMG;
+				uploadRootPath = rootPath + Constant.UPLOAD_IMG;
 			}
 		}
 		for (String extensionAudio : Constant.extensionAudio) {
@@ -347,16 +354,38 @@ public class Util {
 				uploadRootPath = rootPath + Constant.UPLOAD_DOCUMENT;
 			}
 		}
-
-		File f = new File(uploadRootPath);
-		if (!f.exists()) {
-			f.mkdirs();
+		
+		
+		uploadRootPath = uploadRootPath.replace(uploadRootPath,uploadRootPath.substring(6));
+		File f2 = new File(uploadRootPath);
+		if (!f2.exists()) {
+			if (f2.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Failed to create directory!");
+            }
 		}
+		System.out.println("f2: " +f2);
+		
+//		Path path = Paths.get(uploadRootPath);
+//		
+//		if (!Files.exists(path)) {
+//            try {
+//                Files.createDirectories(path);
+//            } catch (IOException e) {
+//                //fail to create directory
+//                e.printStackTrace();
+//            }
+//        }
+//		
+//		System.out.println("path" + String.valueOf(path));
+		
 		String name = file.getOriginalFilename();
 		if (name != null && name.length() > 0) {
 			try {
-				String fSV = uploadRootPath + "\\" + name;
-				fSV = fSV.replace(fSV,fSV.substring(6));
+				String fSV = uploadRootPath + "//" + name;
+//				fSV = fSV.replace(fSV,fSV.substring(6));
+				System.out.println("fsv: " + fSV);
 				File serverFile = new File(fSV);
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				stream.write(file.getBytes());
@@ -371,4 +400,5 @@ public class Util {
 		return false;
 
 	}
+		
 }

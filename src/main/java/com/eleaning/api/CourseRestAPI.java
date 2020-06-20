@@ -166,10 +166,8 @@ public class CourseRestAPI {
 		}
 
 		CourseEntity courseEntity = courseConverter.convertEntity(courseBean);
-//		if(courseBean.getName() == null || courseBean.getDescription() == null) {
-//			responseBean.setEnterAllRequiredFields();
-//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-//		}
+
+		
 		if(courseEntity!= null) {
 			CourseUserBean courseUserBean = new CourseUserBean();
 			CourseBean courseBeanData = new CourseBean();
