@@ -152,7 +152,10 @@ public class UserRestAPI {
 			List<CourseUserBean> courseUserBeanData = new ArrayList<CourseUserBean>();
 			for (CourseEntity courseEntity : courses) {
 				UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
+				Iterable<RoleEntity> iterable = userEntity.getRole();
 				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
+				userBean.setRole(iterable.iterator().next().getRolename());
+				
 				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
 				courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
 				courseUserBean = new CourseUserBean(courseBean,userBean);

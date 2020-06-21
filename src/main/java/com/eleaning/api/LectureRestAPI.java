@@ -187,14 +187,19 @@ public class LectureRestAPI {
 		}
 
 		LectureEntity lectureEntity = lectureService.findById(id);
-		if (lectureEntity != null) {
+		System.out.println(lectureEntity);
+		if (lectureEntity.getId() != null) {
 			lectureEntity.setName(lectureBean.getName());
 			lectureEntity.setDescription(lectureBean.getDescription());
 			LectureEntity lecture = lectureService.save(lectureEntity);
 			responseBean.setData(lecture);
 			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		}else {
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		
 	}
 
 	@DeleteMapping("/{id}")

@@ -34,7 +34,7 @@ import com.eleaning.service.IUserService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/enrolements")
+@RequestMapping("/api")
 public class StudentCourseEnrolementRestAPI {
 
 	private static final Logger logger = LoggerFactory.getLogger(StudentCourseEnrolementRestAPI.class);
@@ -63,7 +63,7 @@ public class StudentCourseEnrolementRestAPI {
 		return false;
 	}
 	
-	@GetMapping("/users/{userid}")
+	@GetMapping("/enrolements/users/{userid}")
 	public ResponseEntity<ResponseBean> getEnrolement(@PathVariable Long userid){
 		ResponseBean responseBean = new ResponseBean();
 		List<CourseUserBean> courseUserBeans = new ArrayList<CourseUserBean>();
@@ -92,7 +92,6 @@ public class StudentCourseEnrolementRestAPI {
 				courseUserBean.setTeacher(user);
 				courseUserBeans.add(courseUserBean);
 				
-				
 			}
 			
 			responseBean.setData(courseUserBeans);
@@ -105,7 +104,7 @@ public class StudentCourseEnrolementRestAPI {
 		}
 	}
 	
-	@PostMapping("/users/{userid}/courses/{courseid}")
+	@PostMapping("/enrolements/users/{userid}/courses/{courseid}")
 	public ResponseEntity<ResponseBean> enrolementStudent(@PathVariable Long userid, @PathVariable Long courseid){
 		ResponseBean responseBean = new ResponseBean();
 		MapBean mapBean = new MapBean();
