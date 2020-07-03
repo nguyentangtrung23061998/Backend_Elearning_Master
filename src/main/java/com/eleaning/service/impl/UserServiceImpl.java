@@ -66,7 +66,8 @@ public class UserServiceImpl implements IUserService{
 
 	@Override
 	public List<UserEntity> getUsers() {
-		return userRepository.findAll();
+//		return userRepository.findAll();
+		return null;
 	}
 
 	@Override
@@ -79,6 +80,20 @@ public class UserServiceImpl implements IUserService{
 		try {
 			Optional<UserEntity> data = userRepository.findByToken(token);
 			if (data.isPresent()) {
+				return data.get();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public UserEntity findByEmail(String email) {
+		try {
+			System.out.println("email: " + email);
+			Optional<UserEntity> data = userRepository.findByEmail(email);
+			if(data.isPresent()) {
 				return data.get();
 			}
 		} catch (Exception e) {

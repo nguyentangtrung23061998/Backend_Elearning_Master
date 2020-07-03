@@ -13,4 +13,5 @@ public interface IUserService {
 	public List<UserEntity> getUsers();
 	public void delete(Long id);
 	public UserEntity findByToken(String token);
+	public UserEntity findByEmail(String email);
 }

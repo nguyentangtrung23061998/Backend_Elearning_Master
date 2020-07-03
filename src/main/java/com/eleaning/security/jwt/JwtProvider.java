@@ -1,6 +1,7 @@
 package com.eleaning.security.jwt;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,8 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import com.eleaning.entity.RoleEntity;
 import com.eleaning.security.services.UserPrinciple;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -37,6 +40,20 @@ public class JwtProvider {
 	                .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
 	                .signWith(SignatureAlgorithm.HS512, jwtSecret)
 	                .compact();
+	}
+	
+	public String createToken(String username, Set<RoleEntity> roles) {
+		Claims claims = Jwts.claims().setSubject(username);
+		claims.put("roles",roles);
+		Date now = new Date();
+		Date validatity = new Date(now.getTime() + jwtExpiration);
+		return Jwts.builder()
+					.setClaims(claims)
+					.setIssuedAt(now)
+					.setExpiration(validatity)
+					.signWith(SignatureAlgorithm.HS256, jwtSecret)
+					.compact();
+		
 	}
 	
 	public boolean validateJwtToken(final String authToken,HttpServletRequest httpServletRequest) {

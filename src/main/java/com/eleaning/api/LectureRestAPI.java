@@ -232,7 +232,7 @@ public class LectureRestAPI {
 		ResponseBean responseBean = new ResponseBean();
 
 		if (lecture != null) {
-			boolean checkUpload = Util.upload(file,request);
+			boolean checkUpload = Util.upload(file);
 			if (checkUpload) {
 				String orginalFile = file.getOriginalFilename();
 				String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);

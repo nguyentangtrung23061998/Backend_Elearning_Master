@@ -7,15 +7,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,6 +51,7 @@ import com.eleaning.conveter.UserConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
+import com.eleaning.security.jwt.JwtProvider;
 import com.eleaning.service.ICourseService;
 import com.eleaning.service.IRoleService;
 import com.eleaning.service.IUserService;
@@ -59,10 +63,13 @@ import com.eleaning.util.Util;
 public class UserRestAPI {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRestAPI.class);
-	
+
+	@Autowired
+	public JavaMailSender emailSender;
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -74,15 +81,18 @@ public class UserRestAPI {
 
 	@Autowired
 	private UserConverter userConverter;
-	
+
 	@Autowired
 	private CourseConverter courseConverter;
-	
+
 	@Autowired
 	private ICourseService courseService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private JwtProvider jwtProvide;
 
 	public boolean checkRole(List list) {
 		for (int i = 0; i < list.size(); i++) {
@@ -92,13 +102,13 @@ public class UserRestAPI {
 			String roleStudent = strRoleStudent.getValue();
 			String roleTeacher = strRoleTeacher.getValue();
 			System.out.println("role: " + role);
-			if(role.equals(roleStudent) || role.equals(roleTeacher)){
+			if (role.equals(roleStudent) || role.equals(roleTeacher)) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	@GetMapping("")
 	private ResponseEntity<ResponseBean> getUsers() {
 		ResponseBean responseBean = new ResponseBean();
@@ -106,7 +116,7 @@ public class UserRestAPI {
 		try {
 			List<UserEntity> users = userService.getUsers();
 			List<UserBean> listUser = new ArrayList<UserBean>();
-			for(UserEntity user : users) {
+			for (UserEntity user : users) {
 				userBean = userConverter.convertBean(user);
 				Set<RoleEntity> userData = user.getRole();
 				Iterator<RoleEntity> role = userData.iterator();
@@ -116,7 +126,7 @@ public class UserRestAPI {
 			responseBean.setData(listUser);
 			responseBean.setSuccess();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
@@ -128,11 +138,11 @@ public class UserRestAPI {
 		ResponseBean responseBean = new ResponseBean();
 		try {
 			UserEntity user = userService.findUserByid(id);
-			if(user != null) {
+			if (user != null) {
 				responseBean.setData(user);
 				responseBean.setSuccess();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-			}else {
+			} else {
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
@@ -141,7 +151,7 @@ public class UserRestAPI {
 		}
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{id}/courses")
 	private ResponseEntity<ResponseBean> getCourseByuserId(@PathVariable Long id) {
 		ResponseBean responseBean = new ResponseBean();
@@ -155,31 +165,29 @@ public class UserRestAPI {
 				Iterable<RoleEntity> iterable = userEntity.getRole();
 				UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
 				userBean.setRole(iterable.iterator().next().getRolename());
-				
-				CourseBean courseBean  =courseConverter.convertBean(courseEntity);
+
+				CourseBean courseBean = courseConverter.convertBean(courseEntity);
 				courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
-				courseUserBean = new CourseUserBean(courseBean,userBean);
+				courseUserBean = new CourseUserBean(courseBean, userBean);
 				courseUserBeanData.add(courseUserBean);
 			}
 			responseBean.setData(courseUserBeanData);
 			responseBean.setSuccess();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	
+
 	@PostMapping("/upload/{id}")
-	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
-			throws IOException {
+	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file) throws IOException {
 		UserEntity user = userService.findUserByid(id);
 		ResponseBean responseBean = new ResponseBean();
 		try {
 			if (user != null) {
-				boolean checkUpload = Util.upload(file,request);
+				boolean checkUpload = Util.upload(file);
 				if (checkUpload) {
 					user.setImage(file.getOriginalFilename());
 					userService.save(user);
@@ -195,45 +203,10 @@ public class UserRestAPI {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 
-//	@PutMapping("/{id}")
-//	private ResponseEntity<ResponseBean> updateUser(@PathVariable long id, @RequestBody UserBean userBean) {
-//		ResponseBean responseBean = new ResponseBean();
-//		try {
-//			Set<RoleEntity> roles = new HashSet<RoleEntity>();
-//			UserEntity user = userService.findUserByid(id);
-//			RoleEntity role = roleService.findByRolename(userBean.getRole());
-//			if (role == null) {
-//				responseBean.setRoleUserNotFound();
-//				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-//			}
-//
-//			user.setUsername(userBean.getUsername());
-//			user.setPassword(passwordEncoder.encode(userBean.getPassword()));
-//			user.setEmail(userBean.getEmail());
-//			user.setFullname(userBean.getFullname());
-//			user.setImage(userBean.getImage());
-//
-//			roles.add(role);
-//			user.setRole(roles);
-//			UserEntity userEntity = userService.save(user);
-//			UserBean userOutput = userConverter.convertBean(userEntity);
-//			userOutput.setImage(user.getImage());
-//			userOutput.setRole(userBean.getRole());
-//				
-//			responseBean.setData(userOutput);
-//			responseBean.setSuccess();
-//			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-//		} catch (Exception e) {
-//			logger.error(e.getMessage());
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-	
 	@PutMapping("/update_profile/{id}")
 	private ResponseEntity<ResponseBean> updateUser(@PathVariable long id, @RequestBody UserBean userBean) {
 		ResponseBean responseBean = new ResponseBean();
@@ -243,83 +216,78 @@ public class UserRestAPI {
 			RoleEntity role = roleService.findByRolename(userBean.getRole());
 			System.out.println("ROle: " + role.getRolename());
 			System.out.println("user bean role: " + userBean.getRole());
-			
+
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			List list = (List) authentication.getAuthorities();
-			
+
 			String roleSystem = String.valueOf(list.get(0));
 			boolean check = checkRole(list);
-//			if(!check) {
-//				responseBean.setRoleFail();
-//				return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
-//			}
-			
-			
+
 			user.setEmail(userBean.getEmail());
 			user.setFullname(userBean.getFullname());
-			if(check) {
-				
+			if (check) {
+
 				roles.add(role);
 				user.setRole(roles);
-				
+
 				UserEntity userEntity = userService.save(user);
 				UserBean userOutput = userConverter.convertBean(userEntity);
 				userOutput.setImage(user.getImage());
 				userOutput.setRole(userBean.getRole());
-					
+
 				responseBean.setData(userOutput);
 				responseBean.setSuccess();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
-			}else {
-				if(!userBean.getRole().equals(roleSystem)) {
+			} else {
+				if (!userBean.getRole().equals(roleSystem)) {
 					MapBean map = new MapBean();
 					map.put("You are not admin", "user don't update role's user");
 					responseBean.setData(map.getAll());
 					responseBean.setBadRequest();
-					
+
 					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
-				}else {
+				} else {
 					roles.add(role);
 					user.setRole(roles);
 					UserEntity userEntity = userService.save(user);
 					UserBean userOutput = userConverter.convertBean(userEntity);
 					userOutput.setImage(user.getImage());
 					userOutput.setRole(userBean.getRole());
-					
+
 					responseBean.setData(userOutput);
 					responseBean.setSuccess();
 					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 				}
 			}
-	
+
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	@PutMapping("/change_password/{id}")
-	private ResponseEntity<ResponseBean> updateUserPassword(@PathVariable long id, @RequestBody ChangePassword changePassword,Principal principal){
+
+	@PutMapping("/change_password")
+	private ResponseEntity<ResponseBean> updateUserPassword(@RequestBody ChangePassword changePassword,
+			Principal principal) {
 		ResponseBean responseBean = new ResponseBean();
 		try {
-			UserEntity user = userService.findUserByid(id);
+			System.out.println("principal: " + principal.getName());
+			UserEntity user = userService.findUser(principal.getName());
 
-		//	authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, changePassword.getCurrentPassword()));
-			
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(user.getUsername(), changePassword.getCurrentPassword()));
-			
-			if(changePassword.getNewPassword().equals(changePassword.getCurrentPassword())) {
+
+			if (changePassword.getNewPassword().equals(changePassword.getCurrentPassword())) {
 				responseBean.setPasswordSame();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
-			
+
 			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
-			
+
 			UserEntity userEntity = userService.save(user);
 			UserBean userOutput = userConverter.convertBean(userEntity);
-			
+
 			responseBean.setData(userOutput);
 			responseBean.setSuccess();
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
@@ -336,14 +304,42 @@ public class UserRestAPI {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List list = (List) authentication.getAuthorities();
 		boolean check = checkRole(list);
-		if(!check) {
+		if (!check) {
 			responseBean.setRoleFail();
-			return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		userService.delete(id);
 		responseBean.setData("{}");
 		responseBean.setSuccess();
+		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+	}
+
+	@GetMapping("/forgot/email")
+	private ResponseEntity<ResponseBean> forgotUser(@PathParam("email") String email) {
+		System.out.println("email: " + email);
+		ResponseBean responseBean = new ResponseBean();
+		MimeMessage message = emailSender.createMimeMessage();
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
+			UserEntity user = userService.findByEmail(email);
+			System.out.println("username: " + user.getUsername());
+			String token = jwtProvide.createToken(user.getUsername(), user.getRole());
+			System.out.println("token:" + token);
+			String htmlMsg = "<p style='color:black;font-size:18px;'>"
+					+ "http://localhost:4200/users/changePassword?token=" + token + "</p>";
+
+			message.setContent(htmlMsg, "text/html");
+			helper.setTo(user.getEmail());
+			helper.setSubject("Reset password");
+
+			emailSender.send(message);
+			responseBean.setSuccess();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}
 }

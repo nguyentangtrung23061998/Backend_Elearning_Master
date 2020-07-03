@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -38,9 +42,12 @@ import com.eleaning.conveter.CourseConverter;
 import com.eleaning.conveter.UserConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.LectureEntity;
+import com.eleaning.entity.MediaEntity;
+import com.eleaning.entity.QuestionsBankEntity;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
 import com.eleaning.service.ICourseService;
+import com.eleaning.service.IMediaService;
 import com.eleaning.service.IUserService;
 import com.eleaning.util.Constant;
 import com.eleaning.util.Util;
@@ -50,6 +57,8 @@ import com.eleaning.util.Util;
 @RequestMapping("/api")
 public class CourseRestAPI {
 	private static final Logger logger = LoggerFactory.getLogger(CourseRestAPI.class);
+
+	private static final HashSet LectureEntity = null;
 	
 	@Autowired
 	private ICourseService courseService;
@@ -62,6 +71,12 @@ public class CourseRestAPI {
 	
 	@Autowired
 	private UserConverter userConverter;
+	
+	@Autowired
+	private IMediaService mediaService;
+	
+	@Autowired
+	ServletContext context;
 
 	public boolean checkRole(List list) {
 		for (int i = 0; i < list.size(); i++) {
@@ -95,24 +110,34 @@ public class CourseRestAPI {
 			
 			for (CourseEntity courseEntity : courses) {
 				if(role.equals(roleAdmin)) {
+					//List<QuestionsBankEntity> questionBanks = courseEntity.getLectures().get(0).getQuestionsBanks();
+					List<LectureEntity> lectures = courseEntity.getLectures();
+					Set<LectureEntity> set = new HashSet<LectureEntity>(lectures);
+					List<LectureEntity> listWithoutDuplicateElements = new ArrayList<LectureEntity>(set);
+					
 					UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
 					Iterable<RoleEntity> iterable = userEntity.getRole();
 					UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
 					userBean.setRole(iterable.iterator().next().getRolename());
 					CourseBean courseBean  =courseConverter.convertBean(courseEntity);
 					courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
-					courseBean.setLetures(courseEntity.getLectures());
+					
+					courseBean.setLetures(listWithoutDuplicateElements);
 					courseUserBean = new CourseUserBean(courseBean,userBean);
 					courseUserBeanData.add(courseUserBean);
 				}else {
 					if(courseEntity.isActive()){
+						List<LectureEntity> lectures = courseEntity.getLectures();
+						Set<LectureEntity> set = new HashSet<LectureEntity>(lectures);
+						List<LectureEntity> listWithoutDuplicateElements = new ArrayList<LectureEntity>(set);
+						
 						UserEntity userEntity = userService.findUserByid(courseEntity.getUser().getId());
 						Iterable<RoleEntity> iterable = userEntity.getRole();
 						UserAboutCourseBean userBean = userConverter.convertUserAboutBean(userEntity);
 						userBean.setRole(iterable.iterator().next().getRolename());
 						CourseBean courseBean  =courseConverter.convertBean(courseEntity);
 						courseBean.setTotalStudentEnroll(courseEntity.getUsers().size());
-						courseBean.setLetures(courseEntity.getLectures());
+						courseBean.setLetures(listWithoutDuplicateElements);
 						courseUserBean = new CourseUserBean(courseBean,userBean);
 						courseUserBeanData.add(courseUserBean);
 					}
@@ -200,17 +225,13 @@ public class CourseRestAPI {
 	@PostMapping("/courses/upload/{id}")
 	private ResponseEntity<ResponseBean> uploadCourse(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
 			throws IOException {
-		
 
-//		File file2 = new File("/static/upload");
-//        URL keyFileURL = this.getClass().getClassLoader().getResource(file2);
-        
 		System.out.println( getClass().getResource(getClass().getSimpleName() + ".class") );
         
 		CourseEntity course = courseService.findById(id);
 		ResponseBean responseBean = new ResponseBean();
 		if (course != null) {
-			boolean checkUpload = Util.upload(file,request);
+			boolean checkUpload = Util.upload(file);
 			if (checkUpload) {
 				String orginalFile = file.getOriginalFilename();
 				String extension= orginalFile.substring(orginalFile.lastIndexOf(".") +1);
@@ -227,6 +248,41 @@ public class CourseRestAPI {
 			}
 		}
 		return null;
+	}
+	
+	@PostMapping("/courses/upload/v2/{id}")
+	private ResponseEntity<ResponseBean> uploadCourseV2(@PathVariable long id, @RequestParam("file") MultipartFile file,HttpServletRequest request)
+			throws IOException {
+		String pathSaveFile = context.getRealPath(Constant.UPLOAD_ROOT);
+		ResponseBean responseBean = new ResponseBean();
+		try {
+			CourseEntity course = courseService.findById(id);
+			if(course == null) {
+				responseBean.setCouseIdNotFound();
+				responseBean.setBadRequest();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+			boolean checkUpload = Util.uploadV2(file,pathSaveFile);
+			if (checkUpload) {
+				String orginalFile = file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
+				String extension= file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") +1);
+				course.setImage(orginalFile);
+				MediaEntity media = new MediaEntity(Calendar.getInstance().getTimeInMillis(),orginalFile, extension);
+				mediaService.save(media);
+				CourseEntity courseEntity = courseService.save(course);
+			
+				responseBean.setData(courseEntity);
+				responseBean.setSuccess();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+			} else {
+				responseBean.setFailUpload();
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@PutMapping("/courses/{id}")
@@ -284,7 +340,6 @@ public class CourseRestAPI {
 		CourseEntity course = courseService.findById(id);
 		
 		if(course.getUsers().size()>0) {
-			System.out.println("aaaaaaaaaaa");
 			int status = HttpStatus.BAD_REQUEST.value();
 			responseBean.setStatus(status);
 			responseBean.setMessages("msg.userExist", "User is enrolement");

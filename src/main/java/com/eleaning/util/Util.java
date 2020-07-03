@@ -1,37 +1,24 @@
 package com.eleaning.util;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 import java.util.Random;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 public class Util {
-
-//	public static final String UPLOAD_IMG = "G:\\HKII-Nam4\\PTPMHDV\\upload\\image";
-//	public static final String UPLOAD_VIDEO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\video";
-//	public static final String UPLOAD_AUDIO = "G:\\HKII-Nam4\\PTPMHDV\\upload\\audio";
-//	public static final String UPLOAD_DOCUMENT = "G:\\HKII-Nam4\\PTPMHDV\\upload\\document";
-
+	
 	public static String getRealIpAddr() {
 
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
@@ -318,7 +305,7 @@ public class Util {
 		return "";
 	}
 
-	public static boolean upload(MultipartFile file, HttpServletRequest request) throws IOException {
+	public static boolean upload(MultipartFile file) throws IOException {
 		URL url = Util.class
                 .getClassLoader().getResource("");
 		String rootPath = String.valueOf(url) + "static";
@@ -366,25 +353,10 @@ public class Util {
             }
 		}
 		System.out.println("f2: " +f2);
-		
-//		Path path = Paths.get(uploadRootPath);
-//		
-//		if (!Files.exists(path)) {
-//            try {
-//                Files.createDirectories(path);
-//            } catch (IOException e) {
-//                //fail to create directory
-//                e.printStackTrace();
-//            }
-//        }
-//		
-//		System.out.println("path" + String.valueOf(path));
-		
 		String name = file.getOriginalFilename();
 		if (name != null && name.length() > 0) {
 			try {
 				String fSV = uploadRootPath + "//" + name;
-//				fSV = fSV.replace(fSV,fSV.substring(6));
 				System.out.println("fsv: " + fSV);
 				File serverFile = new File(fSV);
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
@@ -398,7 +370,91 @@ public class Util {
 			}
 		}
 		return false;
+	}
+	
+	public static boolean uploadV2(MultipartFile file,String uploadRoot) throws IOException {
+		String uploadRootPath = "";
+		String orginalFile = file.getOriginalFilename();
+		String extension = orginalFile.substring(orginalFile.lastIndexOf(".") + 1);
+		
+		for (String extensionVideo : Constant.extensionVideo) {
+			if (extension.equals(extensionVideo)) {
+				uploadRootPath = uploadRoot + Constant.UPLOAD_VIDEO;
+			}
+		}
+		for (String extensionImg : Constant.extensionImg) {
+			if (extension.equals(extensionImg)) {
+				System.out.println("OK send file success");
+				uploadRootPath = uploadRoot + Constant.UPLOAD_IMG;
+			}
+		}
+		for (String extensionAudio : Constant.extensionAudio) {
+			if (extension.equals(extensionAudio)) {
+				uploadRootPath = uploadRoot + Constant.UPLOAD_AUDIO;
+			}
+		}
+		for (String extensionDocument : Constant.extensionDocument) {
+			if (extension.equals(extensionDocument)) {
+				uploadRootPath = uploadRoot + Constant.UPLOAD_DOCUMENT;
+			}
+		}
+		
+		File fileUploadRoot = new File(uploadRootPath);
+		if(!fileUploadRoot.exists()) {
+			fileUploadRoot.mkdirs();
+		}
+		
+		if(orginalFile != null && orginalFile.length()>0) {
+			try {
+				String linkFile =fileUploadRoot  + File.separator + orginalFile;
+				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(linkFile));
+				stream.write(file.getBytes());
+				stream.flush();
+				stream.close();
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static byte[] compressBytes(byte[] data) {
+		Deflater deflater = new Deflater();
+		deflater.setInput(data);
+		deflater.finish();
 
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+		byte[] buffer = new byte[1024];
+		while (!deflater.finished()) {
+			int count = deflater.deflate(buffer);
+			outputStream.write(buffer, 0, count);
+		}
+		try {
+			outputStream.close();
+		} catch (IOException e) {
+		}
+		System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
+		return outputStream.toByteArray();
+	}
+	
+	public static byte[] decompressBytes(byte[] data) {
+		Inflater inflater = new Inflater();
+		inflater.setInput(data);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+		byte[] buffer = new byte[2048];
+		try {
+			while(!inflater.finished()) {
+				int count = inflater.inflate(buffer);
+				outputStream.write(buffer,0,count); 
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("outputStream.toByteArray(): " +outputStream.toByteArray());
+		return outputStream.toByteArray();
 	}
 		
 }

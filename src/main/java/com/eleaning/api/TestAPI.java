@@ -1,72 +1,41 @@
 package com.eleaning.api;
 
-import java.util.List;
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.support.ServletContextResource;
 
-import com.eleaning.bean.ResponseBean;
-import com.eleaning.entity.RoleEntity;
-import com.eleaning.entity.UserEntity;
-import com.eleaning.service.IUserService;
+import com.eleaning.service.impl.CourseService;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/api/test")
 public class TestAPI {
-
 	@Autowired
-	private IUserService userService;
+	private CourseService courseService;
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<ResponseBean> test(@PathVariable long id){
-		ResponseBean responseBean = new ResponseBean();
-	//	List<UserEntity> users = userService.getUsers();
-		UserEntity user  =  userService.findUserByid(id);
-		responseBean.setData(user);
-		responseBean.setSuccess();
-		return new ResponseEntity<ResponseBean>(responseBean,HttpStatus.OK);
-	}
-	
-	@GetMapping("/api/test/student")
-	public String studentAccess() {
-		return ">>> User Contents!";
-	}
-	
-	@GetMapping("/api/test/admin")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public String adminAccess() {
-		return ">>> ADMIN Contents!";
-	}
-	
-	@GetMapping("/api/test/teacher")
-	@PreAuthorize("hasRole('teacher')")
-	public String teacherAccess() {
-		return ">>> TEACHER Contents!";
-	}
+//	@Autowired
+//	ServletContext servletContextl;
 //	
-//	@GetMapping("/api/test/user")
-//	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-//	public String userAccess() {
-//		return ">>> User Contents!";
+//	@ResponseBody
+//	@RequestMapping(value = "/image-resource", method = RequestMethod.GET)
+//	public Resource getImageAsResource() {
+//	   return (Resource) new ServletContextResource(servletContextl, "/WEB-INF/images/2.jpg");
 //	}
-//
-//	@GetMapping("/api/test/pm")
-//	@PreAuthorize("hasRole('PM') or hasRole('ADMIN')")
-//	public String projectManagementAccess() {
-//		return ">>> Board Management Project";
-//	}
-//	
-//	@GetMapping("/api/test/admin")
-//	@PreAuthorize("hasRole('ADMIN')")
-//	public String adminAccess() {
-//		return ">>> Admin Contents";
+	
+//	@RequestMapping(value = "/image-resource2", method = RequestMethod.GET)
+//	@ResponseBody
+//	public ResponseEntity<Resource> getImageAsResource2() {
+//	    HttpHeaders headers = new HttpHeaders();
+//	    
+//	    return new ResponseEntity<>(resource, headers, HttpStatus.OK);
 //	}
 }
