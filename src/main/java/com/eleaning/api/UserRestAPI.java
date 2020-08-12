@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,10 +52,14 @@ import com.eleaning.conveter.UserConverter;
 import com.eleaning.entity.CourseEntity;
 import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
+import com.eleaning.exception.ResourceNotFoundException;
+import com.eleaning.security.CurrentUser;
 import com.eleaning.security.jwt.JwtProvider;
+import com.eleaning.security.services.UserPrinciple;
 import com.eleaning.service.ICourseService;
 import com.eleaning.service.IRoleService;
 import com.eleaning.service.IUserService;
+import com.eleaning.util.Constant;
 import com.eleaning.util.Util;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -114,6 +119,7 @@ public class UserRestAPI {
 		ResponseBean responseBean = new ResponseBean();
 		UserBean userBean = new UserBean();
 		try {
+		
 			List<UserEntity> users = userService.getUsers();
 			List<UserBean> listUser = new ArrayList<UserBean>();
 			for (UserEntity user : users) {
@@ -129,10 +135,58 @@ public class UserRestAPI {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 	}
 
+	@GetMapping("/admin")
+	private ResponseEntity<ResponseBean> getUsersByAdmin() {
+		ResponseBean responseBean = new ResponseBean();
+		UserBean userBean = new UserBean();
+		try {
+			List<UserEntity> data = userService.getUsersByAdmin();
+			responseBean.setData(data);
+			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		}
+	}
+	
+	@GetMapping("/teacher")
+	private ResponseEntity<ResponseBean> getUsersByTeacher() {
+		ResponseBean responseBean = new ResponseBean();
+		UserBean userBean = new UserBean();
+		try {
+			List<UserEntity> data = userService.getUsersByTeacher();
+			responseBean.setData(data);
+			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		}
+	}
+	
+	@GetMapping("/student")
+	private ResponseEntity<ResponseBean> getUsersByStudent() {
+		ResponseBean responseBean = new ResponseBean();
+		UserBean userBean = new UserBean();
+		try {
+			List<UserEntity> data = userService.getUsersByStudent();
+			responseBean.setData(data);
+			responseBean.setSuccess();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			responseBean.setBadRequest();
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
+		}
+	}
+	
 	@GetMapping("/{id}")
 	private ResponseEntity<ResponseBean> getUserById(@PathVariable Long id) {
 		ResponseBean responseBean = new ResponseBean();
@@ -143,7 +197,7 @@ public class UserRestAPI {
 				responseBean.setSuccess();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -177,12 +231,13 @@ public class UserRestAPI {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 	}
 
 	@PostMapping("/upload/{id}")
-	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file) throws IOException {
+	private ResponseEntity<ResponseBean> uploadUsers(@PathVariable long id, @RequestParam("file") MultipartFile file)
+			throws IOException {
 		UserEntity user = userService.findUserByid(id);
 		ResponseBean responseBean = new ResponseBean();
 		try {
@@ -196,7 +251,7 @@ public class UserRestAPI {
 					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 				} else {
 					responseBean.setFailUpload();
-					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 				}
 			}
 		} catch (Exception e) {
@@ -214,7 +269,15 @@ public class UserRestAPI {
 			Set<RoleEntity> roles = new HashSet<RoleEntity>();
 			UserEntity user = userService.findUserByid(id);
 			RoleEntity role = roleService.findByRolename(userBean.getRole());
-			System.out.println("ROle: " + role.getRolename());
+			
+//			Iterator<RoleEntity> roleIterator = user.getRole().iterator();
+//			String role = "";
+//			while (roleIterator.hasNext()) {
+//				role = roleIterator.next().getRolename();
+//				break;
+//			}
+					;
+			System.out.println("ROle: " + role);
 			System.out.println("user bean role: " + userBean.getRole());
 
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -245,8 +308,9 @@ public class UserRestAPI {
 					responseBean.setData(map.getAll());
 					responseBean.setBadRequest();
 
-					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 				} else {
+					
 					roles.add(role);
 					user.setRole(roles);
 					UserEntity userEntity = userService.save(user);
@@ -263,7 +327,7 @@ public class UserRestAPI {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 	}
 
@@ -280,7 +344,7 @@ public class UserRestAPI {
 
 			if (changePassword.getNewPassword().equals(changePassword.getCurrentPassword())) {
 				responseBean.setPasswordSame();
-				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 			}
 
 			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
@@ -294,7 +358,7 @@ public class UserRestAPI {
 		} catch (AuthenticationException e) {
 			logger.error(e.getMessage());
 			responseBean.setPasswordFail();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 	}
 
@@ -306,7 +370,7 @@ public class UserRestAPI {
 		boolean check = checkRole(list);
 		if (!check) {
 			responseBean.setRoleFail();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 
 		userService.delete(id);
@@ -325,6 +389,7 @@ public class UserRestAPI {
 			UserEntity user = userService.findByEmail(email);
 			System.out.println("username: " + user.getUsername());
 			String token = jwtProvide.createToken(user.getUsername(), user.getRole());
+//			String token = null;
 			System.out.println("token:" + token);
 			String htmlMsg = "<p style='color:black;font-size:18px;'>"
 					+ "http://localhost:4200/users/changePassword?token=" + token + "</p>";
@@ -338,7 +403,7 @@ public class UserRestAPI {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			responseBean.setBadRequest();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 		return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 	}

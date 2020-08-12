@@ -2,200 +2,152 @@ package com.eleaning.security.services;
 
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.eleaning.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class UserPrinciple implements UserDetails {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class UserPrinciple implements OAuth2User, UserDetails {
 
 	private Long id;
-
-	private String username;
-
-	@JsonIgnore
-	private String password;
-
 	private String email;
-
-	private String image;
-
-	private String token;
-
-	private String createdBy;
-
-	private String modifiedby;
-
-	private Timestamp createdDate;
-
-	private Timestamp modifieddate;
-	
+	private String username;
+	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
+	private Map<String, Object> attributes;
 	
-	public UserPrinciple(Long id, String username, String password, String email, String image, String token,
-			String createdBy, String modifiedby, Timestamp createdDate, Timestamp modifieddate,
+	public UserPrinciple(Long id, String email, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
+		this.email = email;
 		this.username = username;
 		this.password = password;
-		this.email = email;
-		this.image = image;
-		this.token = token;
-		this.createdBy = createdBy;
-		this.modifiedby = modifiedby;
-		this.createdDate = createdDate;
-		this.modifieddate = modifieddate;
 		this.authorities = authorities;
+		this.attributes = attributes;
 	}
 	
-	//build UserPrinciple
 	public static UserPrinciple build(UserEntity user) {
 		List<GrantedAuthority> authorities = user.getRole()
-				.stream().map(role -> new SimpleGrantedAuthority(role.getRolename())).collect(Collectors.toList());
-		return new UserPrinciple(user.getId(), user.getUsername(), 
-						user.getPassword(), user.getEmail(), 
-						user.getImage(), user.getToken(), 
-						user.getCreatedby(), user.getModifiedby(), 
-						user.getCreateddate(), user.getModifieddate(), authorities);
+					.stream().map(role -> new SimpleGrantedAuthority(role.getRolename())).collect(Collectors.toList());
+//		List<GrantedAuthority> authorities = Collections.
+//                singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+		return new UserPrinciple(user.getId(), user.getEmail(), user.getFullname(), user.getPassword(), authorities);
 	}
 	
-
-	public Long getId() {
-		return id;
+	public static UserPrinciple build(UserEntity user,Map<String, Object> attributes) {
+		UserPrinciple userPrinciple = UserPrinciple.build(user);
+		userPrinciple.setAttributes(attributes);
+		return userPrinciple;
 	}
 	
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getEmail() {
-		return email;
+	@Override
+	public Map<String, Object> getAttributes() {
+		return attributes;
 	}
 	
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public String getToken() {
-		return token;
-	}
- 
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public String getModifiedby() {
-		return modifiedby;
-	}
-
-	public void setModifiedby(String modifiedby) {
-		this.modifiedby = modifiedby;
-	}
-
-	public Timestamp getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Timestamp createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public Timestamp getModifieddate() {
-		return modifieddate;
-	}
-
-	public void setModifieddate(Timestamp modifieddate) {
-		this.modifieddate = modifieddate;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		this.authorities = authorities;
-	}
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
 		return authorities;
 	}
-
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return email;
+	}
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
 		return password;
 	}
-
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return username;
+		return email;
 	}
-
 	@Override
 	public boolean isAccountNonExpired() {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 	@Override
 	public boolean isAccountNonLocked() {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 	@Override
 	public boolean isCredentialsNonExpired() {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 	@Override
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-
-		UserPrinciple user = (UserPrinciple) o;
-		return Objects.equals(id, user.id);
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
 	}
 
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * @param authorities the authorities to set
+	 */
+	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
+
+	/**
+	 * @param attributes the attributes to set
+	 */
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
+	}
 }

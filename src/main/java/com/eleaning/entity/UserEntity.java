@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,8 +18,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.eleaning.bean.AuthProviderBean;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -37,12 +42,22 @@ public class UserEntity {
 	@Size(min = 3, max = 50)
 	private String email;
 
+	@Column(nullable = false)
+	private boolean emailVerified;
+
 	private String image;
 
 	@Size(min = 3, max = 50)
 	private String fullname;
 
 	private String token;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private AuthProviderBean provider;
+
+	@Column(name="providerId")
+	private String providerId;
 
 	private Timestamp createddate;
 
@@ -60,7 +75,7 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	@JsonIgnore
 	private List<CourseEntity> course;
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "student_course_enrolement", joinColumns = @JoinColumn(name = "userid"), inverseJoinColumns = @JoinColumn(name = "courseid"))
 	@JsonIgnore
@@ -71,15 +86,44 @@ public class UserEntity {
 
 	public UserEntity(Long id, @NotBlank @Size(min = 3, max = 50) String username,
 			@NotBlank @Size(min = 3, max = 50) String password, @NotBlank @Size(min = 3, max = 50) String email,
-			String image, @Size(min = 3, max = 50) String fullname, String token, Timestamp createddate,
-			Timestamp modifieddate, String createdby, String modifiedby) {
+			boolean emailVerified, String image, @Size(min = 3, max = 50) String fullname, String token,
+			@NotNull AuthProviderBean provider, String providerId, Timestamp createddate, Timestamp modifieddate,
+			String createdby, String modifiedby, Set<RoleEntity> role, List<CourseEntity> course,
+			Set<CourseEntity> courser_enroll) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
+		this.emailVerified = emailVerified;
 		this.image = image;
 		this.fullname = fullname;
 		this.token = token;
+		this.provider = provider;
+		this.providerId = providerId;
+		this.createddate = createddate;
+		this.modifieddate = modifieddate;
+		this.createdby = createdby;
+		this.modifiedby = modifiedby;
+		this.role = role;
+		this.course = course;
+		this.courser_enroll = courser_enroll;
+	}
+	
+	public UserEntity(Long id, @NotBlank @Size(min = 3, max = 50) String username,
+			@NotBlank @Size(min = 3, max = 50) String password, @NotBlank @Size(min = 3, max = 50) String email,
+			boolean emailVerified, String image, @Size(min = 3, max = 50) String fullname, String token,
+			@NotNull AuthProviderBean provider, String providerId, Timestamp createddate, Timestamp modifieddate,
+			String createdby, String modifiedby) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.emailVerified = emailVerified;
+		this.image = image;
+		this.fullname = fullname;
+		this.token = token;
+		this.provider = provider;
+		this.providerId = providerId;
 		this.createddate = createddate;
 		this.modifieddate = modifieddate;
 		this.createdby = createdby;
@@ -289,6 +333,47 @@ public class UserEntity {
 		this.courser_enroll = courser_enroll;
 	}
 
-	
+	/**
+	 * @return the emailVerified
+	 */
+	public boolean isEmailVerified() {
+		return emailVerified;
+	}
+
+	/**
+	 * @param emailVerified the emailVerified to set
+	 */
+	public void setEmailVerified(boolean emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	/**
+	 * @return the provider
+	 */
+	public AuthProviderBean getProvider() {
+		return provider;
+	}
+
+	/**
+	 * @param provider the provider to set
+	 */
+	public void setProvider(AuthProviderBean provider) {
+		this.provider = provider;
+	}
+
+	/**
+	 * @return the providerId
+	 */
+	public String getProviderId() {
+		return providerId;
+	}
+
+	/**
+	 * @param providerId the providerId to set
+	 */
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
+	}
+
 	
 }

@@ -1,27 +1,34 @@
 package com.eleaning.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.eleaning.entity.CourseEntity;
+import com.eleaning.entity.RoleEntity;
 import com.eleaning.entity.UserEntity;
 import com.eleaning.repository.IUserRepository;
 import com.eleaning.service.IUserService;
+import com.eleaning.util.Constant;
+import com.eleaning.util.Util;
 
 @Service
-public class UserServiceImpl implements IUserService{
+public class UserServiceImpl implements IUserService {
 	@Autowired
 	private IUserRepository userRepository;
 
 	@Override
 	public UserEntity save(UserEntity entity) {
-		if(entity.getId() == 0) {
+		if (entity.getId() == 0) {
 			entity.setCreateddate(new Timestamp(System.currentTimeMillis()));
-			
-		}else {
+
+		} else {
 			entity.setModifieddate(new Timestamp(System.currentTimeMillis()));
 		}
 		userRepository.save(entity);
@@ -66,8 +73,15 @@ public class UserServiceImpl implements IUserService{
 
 	@Override
 	public List<UserEntity> getUsers() {
-//		return userRepository.findAll();
-		return null;
+		try {
+			System.out.println("aaaaaaa");
+			List<UserEntity> result = new ArrayList<UserEntity>();
+			userRepository.findAll().forEach(result::add);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<UserEntity>();
 	}
 
 	@Override
@@ -93,7 +107,7 @@ public class UserServiceImpl implements IUserService{
 		try {
 			System.out.println("email: " + email);
 			Optional<UserEntity> data = userRepository.findByEmail(email);
-			if(data.isPresent()) {
+			if (data.isPresent()) {
 				return data.get();
 			}
 		} catch (Exception e) {
@@ -101,6 +115,77 @@ public class UserServiceImpl implements IUserService{
 		}
 		return null;
 	}
-	
-	
+
+	@Override
+	public List<UserEntity> getUsersByStudent() {
+		try {
+			List<UserEntity> users = new ArrayList<UserEntity>();
+			userRepository.findAll().forEach(users::add);
+			List<UserEntity> listData = new ArrayList<UserEntity>();
+			System.out.println("users: " + users);
+			for (UserEntity userEntity : users) {
+				Iterator<RoleEntity> roles = userEntity.getRole().iterator();
+				String role = "";
+				while (roles.hasNext()) {
+					role = roles.next().getRolename();
+					break;
+				}
+				if (role.equals(Constant.role[2])) {
+					listData.add(userEntity);
+				}
+			}
+			return listData;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<UserEntity>();
+	}
+
+	@Override
+	public List<UserEntity> getUsersByAdmin() {
+		try {
+			List<UserEntity> users = new ArrayList<UserEntity>();
+			userRepository.findAll().forEach(users::add);
+			List<UserEntity> listData = new ArrayList<UserEntity>();
+			for (UserEntity userEntity : users) {
+				Iterator<RoleEntity> roles = userEntity.getRole().iterator();
+				String role = "";
+				while (roles.hasNext()) {
+					role = roles.next().getRolename();
+					break;
+				}
+				if (role.equals(Constant.role[0])) {
+					listData.add(userEntity);
+				}
+			}
+			return listData;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<UserEntity>();
+	}
+
+	@Override
+	public List<UserEntity> getUsersByTeacher() {
+		try {
+			List<UserEntity> users = new ArrayList<UserEntity>();
+			userRepository.findAll().forEach(users::add);
+			List<UserEntity> listData = new ArrayList<UserEntity>();
+			for (UserEntity userEntity : users) {
+				Iterator<RoleEntity> roles = userEntity.getRole().iterator();
+				String role = "";
+				while (roles.hasNext()) {
+					role = roles.next().getRolename();
+					break;
+				}
+				if (role.equals(Constant.role[1])) {
+					listData.add(userEntity);
+				}
+			}
+			return listData;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<UserEntity>();
+	}
 }

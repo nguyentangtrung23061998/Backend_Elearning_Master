@@ -48,4 +48,6 @@ public class Constant {
 	public static final String UPLOAD_VIDEO = "/upload/video";
 	public static final String UPLOAD_AUDIO = "/upload/audio";
 	public static final String UPLOAD_DOCUMENT = "/upload/document";
+	
+	public static final String[] role = {"ROLE_ADMIN","ROLE_TEACHER","ROLE_STUDENT"};
 }

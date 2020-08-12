@@ -1,11 +1,11 @@
 package com.eleaning.bean;
 
 public class LoginBean {
-	private String username;
+	private String email;
 	private String password;
-	public LoginBean(String username, String password) {
+	public LoginBean(String email, String password) {
 		super();
-		this.username = username;
+		this.email = email;
 		this.password = password;
 	}
 	public LoginBean() {
@@ -14,14 +14,14 @@ public class LoginBean {
 	/**
 	 * @return the username
 	 */
-	public String getUsername() {
-		return username;
+	public String getEmail() {
+		return email;
 	}
 	/**
 	 * @param username the username to set
 	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	/**
 	 * @return the password

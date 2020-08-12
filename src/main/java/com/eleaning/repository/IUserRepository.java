@@ -21,4 +21,5 @@ public interface IUserRepository extends CrudRepository<UserEntity, Long> {
 	
 	@Query("SELECT m FROM UserEntity m WHERE email = :email ")
 	Optional<UserEntity> findByEmail(@Param("email") String email);
+	
 }

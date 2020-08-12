@@ -28,9 +28,6 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 		} else {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Login details");
 		}
-
-//		log.error("Unauthorized error. Message - {}");
-//		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error -> Unauthorized");
 	}
 
 }

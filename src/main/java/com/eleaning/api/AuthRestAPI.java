@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eleaning.bean.AuthProviderBean;
 import com.eleaning.bean.LoginBean;
 import com.eleaning.bean.MapBean;
 import com.eleaning.bean.ResponseBean;
@@ -57,20 +58,21 @@ public class AuthRestAPI {
 	@PostMapping("/signin")
 	public ResponseEntity<ResponseBean> authenicateUser(@RequestBody LoginBean loginBean) {
 		ResponseBean responseBean = new ResponseBean();
+		
 		try {
-			loginBean.setUsername(Util.trim(loginBean.getUsername()));
+			loginBean.setEmail(Util.trim(loginBean.getEmail()));
 			loginBean.setPassword(Util.trim(loginBean.getPassword()));
 
-			if (loginBean.getUsername() == null || loginBean.getPassword() == null) {
+			if (loginBean.getEmail() == null || loginBean.getPassword() == null) {
 				responseBean.setEnterAllRequiredFields();
 				return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
 			}
 			
 			Authentication authentication = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(loginBean.getUsername(), loginBean.getPassword()));
+					new UsernamePasswordAuthenticationToken(loginBean.getEmail(), loginBean.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			UserEntity user = userService.findUser(loginBean.getUsername());
-
+			UserEntity user = userService.findByEmail(loginBean.getEmail());
+			
 			String jwt = jwtProvider.generateJwtToken(authentication);
 			Authentication roleAuthentication = SecurityContextHolder.getContext().getAuthentication();
 			List list = (List) roleAuthentication.getAuthorities();
@@ -92,8 +94,9 @@ public class AuthRestAPI {
 			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 			
 		} catch (AuthenticationException e) {
+			System.out.println("ex: " + e.getMessage());
 			responseBean.setLoginFail();
-			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponseBean>(responseBean, HttpStatus.OK);
 		}
 	}
 
@@ -119,8 +122,8 @@ public class AuthRestAPI {
 		// create user's account
 		Long id = Calendar.getInstance().getTimeInMillis();
 		String encodePasswod = encode.encode(signupBean.getPassword());
-		UserEntity user = new UserEntity(id, signupBean.getUsername(), encodePasswod, signupBean.getEmail(), "",
-				signupBean.getFullname(), "", new Timestamp(System.currentTimeMillis()),
+		UserEntity user = new UserEntity(id, signupBean.getUsername(), encodePasswod, signupBean.getEmail(), true,	"",
+				signupBean.getFullname(), "",AuthProviderBean.local,"", new Timestamp(System.currentTimeMillis()),
 				new Timestamp(System.currentTimeMillis()), "", "");
 
 		Set<String> strRoles = signupBean.getRole();
@@ -152,12 +155,6 @@ public class AuthRestAPI {
 				}
 				break;
 			default:
-//				RoleEntity roleUser = roleService.findByRolename("ROLE_USER");
-//				if (roleUser == null) {
-//					responseBean.setRoleUserNotFound();
-//				} else {
-//					roles.add(roleUser);
-//				}
 				responseBean.setRoleUserNotFound();
 				break;
 			}
@@ -170,6 +167,7 @@ public class AuthRestAPI {
 		map.put("username", user.getUsername());
 		map.put("email", user.getEmail());
 		map.put("fullname", user.getFullname());
+		map.put("provider", user.getProvider());
 
 		responseBean.setData(map);
 		responseBean.setInsertSuccess();
